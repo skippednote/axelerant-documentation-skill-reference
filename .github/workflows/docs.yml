@@ -30,4 +30,9 @@ jobs:
   coupling:
     name: Coupling
     if: github.event_name == 'pull_request'
+    # A called workflow cannot hold more permission than the caller grants it.
+    # Without this the whole file is rejected before any job starts.
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/docs-coupling.yml
