@@ -1,6 +1,9 @@
 {
   "name": "axelerant-engineering-documentation",
   "version": "0.1.0",
-  "description": "Sets up and maintains repository documentation to the Axelerant Engineering Documentation Standard. Scaffolds greenfield repos, migrates brownfield ones, audits against the contract, and blocks generated filler.",
-  "author": { "name": "Axelerant" }
+  "description": "Sets up and maintains repository documentation to the Axelerant Engineering Documentation Standard — tiered README and docs/ contract, MADR ADRs, alert-named runbooks, C4 diagrams, and an audit that blocks generated filler. Handles brownfield and greenfield repos.",
+  "author": { "name": "Axelerant" },
+  "license": "Apache-2.0",
+  "commands": ["./commands"],
+  "skills": ["./skills"]
 }

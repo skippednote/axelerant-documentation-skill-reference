@@ -96,8 +96,22 @@ The contract in `skills/axelerant-engineering-documentation/references/contract.
 
 ## Distribution
 
-Copy `skills/axelerant-engineering-documentation` into `~/.claude/skills/`, or add this repository as a Claude Code plugin marketplace source and install `axelerant-engineering-documentation`.
+The skill ships as a plugin in the `axelerant/claude-plugins` marketplace:
+
+```
+/plugin marketplace add axelerant/claude-plugins
+/plugin install axelerant-engineering-documentation
+```
+
+This repository is the source of truth. The plugin directory here is copied into the marketplace
+on each tag by `.github/workflows/publish-to-marketplace.yml`, which opens a pull request rather
+than pushing. Edit the skill here, never in the marketplace repo, or the two will drift.
+
+For a local copy without the marketplace, `cp -R skills/axelerant-engineering-documentation ~/.claude/skills/`.
+
+The reusable CI workflows stay here and are called by reference, so an adopting repo pins one ref
+and gets the contract, the audit script, the Vale style and the markdownlint config together.
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).

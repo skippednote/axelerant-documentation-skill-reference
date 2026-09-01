@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo under audit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Check out the contract
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: skippednote/axelerant-documentation-skill-reference
           ref: ${{ inputs.ref }}
@@ -52,8 +52,8 @@ jobs:
     name: markdownlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           repository: skippednote/axelerant-documentation-skill-reference
           ref: ${{ inputs.ref }}
@@ -62,7 +62,7 @@ jobs:
         run: |
           [ -f .markdownlint-cli2.jsonc ] || \
             cp .docs-standard/.markdownlint-cli2.jsonc .
-      - uses: DavidAnson/markdownlint-cli2-action@v16
+      - uses: DavidAnson/markdownlint-cli2-action@v24
         with:
           globs: "**/*.md #.docs-standard"
 
@@ -71,8 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !inputs.skip_vale }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           repository: skippednote/axelerant-documentation-skill-reference
           ref: ${{ inputs.ref }}
@@ -83,7 +83,7 @@ jobs:
             cp .docs-standard/.vale.ini .
             mkdir -p styles && cp -R .docs-standard/styles/Axelerant styles/
           fi
-      - uses: errata-ai/vale-action@reviewdog
+      - uses: errata-ai/vale-action@v3
         with:
           reporter: github-pr-check
           fail_on_error: true
@@ -94,8 +94,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !inputs.skip_links }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: lycheeverse/lychee-action@v2
+      - uses: actions/checkout@v7
+      - uses: lycheeverse/lychee-action@v2.9.0
         with:
           args: >-
             --no-progress --accept 200,206,429
