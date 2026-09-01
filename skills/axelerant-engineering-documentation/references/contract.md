@@ -63,8 +63,10 @@ docs/reference/            lookup. Generated where a generator exists.
 docs/explanation/          architecture.md, data-model.md, security.md
 docs/adr/                  MADR, one file per decision
 docs/runbooks/             one per alert. Only when on_call: true
-docs/assets/diagrams/      .mmd sources
+docs/assets/               images and standalone diagram sources
 ```
+
+A diagram that explains one page lives in that page as a fenced Mermaid block, so GitHub renders it and a change arrives as a reviewable diff. `assets/` exists only for files that are not tied to a single page, or for screenshots. Do not keep a `.mmd` copy of a diagram that is already inline; two copies of a diagram is one diagram and one future lie.
 
 Diátaxis assignment, when unsure which folder a page belongs in:
 
@@ -133,7 +135,8 @@ A single generic `operations/runbook.md` does not satisfy this.
 - C4 Level 2 (containers): required at Tier 2.
 - Sequence diagrams: optional, for flows prose keeps failing on.
 - Levels 3 and 4: banned. Not maintainable by hand.
-- Mermaid only, in fenced blocks or `.mmd` under `docs/assets/diagrams/`. No exported PNGs except UI screenshots, where the image is the content.
+- Mermaid only, inline in the page it explains. `.mmd` files under `docs/assets/diagrams/` only for diagrams not tied to a single page. No exported PNGs except UI screenshots, where the image is the content.
+- Sequence diagrams earn their place where prose is densest: a race, a retry path, a multi-party handshake. A state diagram is worth it when a status column moves in more than two ways.
 
 ## 9. Agent files
 

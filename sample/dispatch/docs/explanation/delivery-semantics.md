@@ -15,6 +15,29 @@ Three paths produce one.
 
 **The visibility timeout expires mid-send.** The dispatcher claims a message, calls the provider, and the provider takes longer than the remaining visibility window. SQS redelivers to another worker while the first attempt is still in flight. Both succeed. The recipient gets two.
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Q as SQS
+    participant W1 as Worker A
+    participant W2 as Worker B
+    participant P as Provider
+    participant DB as Postgres
+
+    W1->>Q: receive (visibility 300s starts)
+    W1->>DB: read message
+    W1->>P: send
+    Note over W1,P: provider is slow
+    Q--)W2: visibility expired, redeliver
+    W2->>DB: read message (still queued)
+    W2->>P: send
+    P-->>W2: 200 accepted
+    W2->>DB: status = sent
+    P-->>W1: 200 accepted
+    W1->>DB: status = sent (again)
+    Note over P: recipient received two
+```
+
 This is why `PROVIDER_TIMEOUT` × `RETRY_MAX_ATTEMPTS` must stay under the queue's 300-second visibility timeout. That constraint is not decoration; violating it turns a rare duplicate into a routine one.
 
 **The provider succeeds and the status write fails.** The vendor accepted the message, then the database write recording `sent` failed. The row still says `queued`, so the next claim sends again.

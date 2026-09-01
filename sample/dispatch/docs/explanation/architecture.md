@@ -69,7 +69,42 @@ Both binaries build from the same module. `make run` starts them in one process 
 
 ## Runtime view
 
-A normal send: API validates against the sender record, writes `notifications` with status `queued`, enqueues the id, returns 202. The dispatcher claims the id, re-reads the row, checks the suppression list and the rate limiter, calls the provider, writes `sent` with the receipt. On a retryable error it writes `queued` with an incremented attempt count and lets the visibility timeout redeliver. On a permanent error it writes `failed` with `last_error` and deletes the queue message.
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Prod as Producer
+    participant API
+    participant DB as Postgres
+    participant Q as SQS
+    participant W as Dispatcher
+    participant CRM as Suppression list
+    participant P as Provider
+
+    Prod->>API: POST /v1/messages
+    API->>DB: validate sender, insert status=queued
+    API->>Q: enqueue id
+    API-->>Prod: 202 accepted
+    W->>Q: claim id
+    W->>DB: read current row
+    W->>CRM: is this recipient suppressed?
+    CRM-->>W: no
+    W->>P: send
+    alt accepted
+        P-->>W: receipt
+        W->>DB: status = sent
+        W->>Q: delete message
+    else retryable
+        P-->>W: throttled
+        W->>DB: attempts + 1
+        Note over W,Q: no delete; visibility timeout redelivers
+    else permanent
+        P-->>W: rejected
+        W->>DB: status = failed, last_error
+        W->>Q: delete message
+    end
+```
+
+The producer's call returns before any delivery happens, which is the behaviour the separation exists to provide. The suppression check sits inside the attempt rather than at accept time, so consent withdrawn between accepting and sending is still honoured.
 
 After five receives SQS moves the message to the DLQ. Nothing automatically drains the DLQ; that is a human decision, described in [the queue depth runbook](../runbooks/dispatch-queue-depth-critical.md).
 

@@ -21,6 +21,7 @@ Outbound notification service. Internal services POST a message; dispatch persis
 | know which environment is which | [reference/environments.md](reference/environments.md) |
 | understand the split between API and dispatcher | [explanation/architecture.md](explanation/architecture.md) |
 | understand duplicate deliveries | [explanation/delivery-semantics.md](explanation/delivery-semantics.md) |
+| read the schema | [explanation/data-model.md](explanation/data-model.md) |
 | know why something is the way it is | [adr/](adr/) |
 | respond to an alert | [runbooks/](runbooks/) |
 
