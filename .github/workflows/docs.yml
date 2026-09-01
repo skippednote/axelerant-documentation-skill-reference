@@ -26,3 +26,8 @@ jobs:
     with:
       path: sample/dispatch
       skip_links: true
+
+  coupling:
+    name: Coupling
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/docs-coupling.yml
