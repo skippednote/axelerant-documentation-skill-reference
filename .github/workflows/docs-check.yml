@@ -21,6 +21,12 @@ on:
       skip_links:
         type: boolean
         default: false
+      link_exclude_paths:
+        description: >-
+          Space-separated paths the link checker skips. Use it for directories of
+          file templates, whose relative links only resolve once instantiated.
+        type: string
+        default: ""splitme
 
 jobs:
   contract:
@@ -92,7 +98,9 @@ jobs:
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
-            --no-progress --accept 200,206,429 --exclude-path .docs-standard
+            --no-progress --accept 200,206,429
+            --exclude-path .docs-standard
+            ${{ inputs.link_exclude_paths && format('--exclude-path {0}', inputs.link_exclude_paths) || '' }}
             --exclude '^https?://(localhost|.*\.internal|.*\.test)'
             "**/*.md"
           fail: true
