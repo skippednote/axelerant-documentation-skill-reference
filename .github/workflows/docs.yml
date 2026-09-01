@@ -19,3 +19,10 @@ jobs:
     with:
       path: "."
       link_exclude_paths: skills/axelerant-engineering-documentation/references/templates
+
+  sample:
+    name: Worked example
+    uses: ./.github/workflows/docs-check.yml
+    with:
+      path: sample/dispatch
+      skip_links: true
