@@ -26,6 +26,7 @@ Produce documentation that a stranger can act on, and that a linter can check. T
 | New or empty repo | `references/greenfield.md` |
 | One ADR or one runbook needed | `references/contract.md`, sections 6 and 7, plus the templates |
 | "Is this repo compliant?" | Run `scripts/docs_audit.py` |
+| A diagram was written or changed | Run `scripts/mermaid_check.py`, then `--render` if `npx` is available |
 
 ## Hard rules
 
@@ -34,6 +35,7 @@ Produce documentation that a stranger can act on, and that a linter can check. T
 - **No placeholder files.** Never create a file whose content is a heading and a `TODO`. Create it when you have the content.
 - **No forward declarations.** Never write an index entry for a file that does not exist, and never write a status document about documentation you plan to write.
 - **Delete rather than migrate filler.** Per-feature catalogues, roadmap folders and docs-about-docs are removed, not relocated. Say what you deleted.
+- **Validate every diagram you write.** Run `scripts/mermaid_check.py <repo>` after writing any Mermaid block, and `--render` when `npx` is available. A diagram that fails to parse renders as a red error box on GitHub, which is worse than no diagram. The commonest cause is a semicolon inside note or label text: it separates statements and truncates the block.
 - **Stop at the contract.** Do not add `CONTRIBUTING.md`, `SECURITY.md`, badges, tables of contents or extra folders unless the user asks.
 
 ## Output
@@ -42,6 +44,6 @@ End every run with:
 
 1. Files created, modified, deleted — as paths.
 2. Sections left empty and the question that would fill each.
-3. `scripts/docs_audit.py` result.
+3. `scripts/docs_audit.py` result, and `scripts/mermaid_check.py` if you wrote or changed a diagram.
 
 Do not claim the docs are complete. State what is grounded and what is not.

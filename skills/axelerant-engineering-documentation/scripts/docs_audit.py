@@ -10,6 +10,12 @@ import sys
 import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    import mermaid_check
+except ImportError:                                   # standalone copy
+    mermaid_check = None
+
 README_SECTIONS = [
     ("Status", True), ("Requirements", True), ("Quick start", True),
     ("Common commands", True), ("How we work here", True), ("Ownership", True),
@@ -233,6 +239,25 @@ def check_docs_files(root, cfg):
             add("WARN", s, f"last_verified is not a date: {lv!r}")
 
 
+def check_mermaid(root):
+    """Static Mermaid checks. The render pass is a separate CI job."""
+    if mermaid_check is None:
+        add("WARN", "-", "mermaid_check.py not alongside; diagram checks skipped")
+        return
+    mermaid_check.findings = []
+    for f in sorted(root.rglob("*.md")):
+        rel = f.relative_to(root)
+        if any(p in (".git", "node_modules", "vendor") for p in rel.parts):
+            continue
+        if ignored(rel):
+            continue
+        text = f.read_text(errors="ignore")
+        for index, body, _ in mermaid_check.blocks(text):
+            mermaid_check.static_check(rel, index, body)
+    for where, line, msg in mermaid_check.findings:
+        add("BLOCK", f"{where}" + (f" line {line}" if line else ""), msg)
+
+
 def check_agents(root):
     a, c = root / "AGENTS.md", root / "CLAUDE.md"
     if not a.exists():
@@ -254,6 +279,7 @@ def main():
     check_readme(root, tier)
     check_tree(root, tier, cfg["on_call"])
     check_docs_files(root, cfg)
+    check_mermaid(root)
     check_agents(root)
 
     blocks = [f for f in findings if f[0] == "BLOCK"]

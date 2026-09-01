@@ -96,7 +96,7 @@ sequenceDiagram
     else retryable
         P-->>W: throttled
         W->>DB: attempts + 1
-        Note over W,Q: no delete; visibility timeout redelivers
+        Note over W,Q: no delete, so the visibility timeout redelivers
     else permanent
         P-->>W: rejected
         W->>DB: status = failed, last_error

@@ -21,6 +21,10 @@ on:
       skip_links:
         type: boolean
         default: false
+      skip_mermaid:
+        description: Skip the diagram render pass. It needs a headless browser.
+        type: boolean
+        default: false
       link_exclude_paths:
         description: >-
           Space-separated paths the link checker skips. Use it for directories of
@@ -104,3 +108,22 @@ jobs:
             --exclude '^https?://(localhost|.*\.internal|.*\.test)'
             "**/*.md"
           fail: true
+
+  mermaid:
+    name: Diagrams render
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_mermaid }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Render every Mermaid block
+        run: |
+          python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py \
+            "${{ inputs.path }}" --render

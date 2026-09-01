@@ -137,6 +137,8 @@ A single generic `operations/runbook.md` does not satisfy this.
 - Levels 3 and 4: banned. Not maintainable by hand.
 - Mermaid only, inline in the page it explains. `.mmd` files under `docs/assets/diagrams/` only for diagrams not tied to a single page. No exported PNGs except UI screenshots, where the image is the content.
 - Sequence diagrams earn their place where prose is densest: a race, a retry path, a multi-party handshake. A state diagram is worth it when a status column moves in more than two ways.
+- Every block is validated before it is committed. `scripts/mermaid_check.py` runs the static checks with no dependencies; CI runs the same script with `--render`, which hands each block to mermaid-cli and is the only authoritative answer to whether it renders. An unparseable diagram shows as a red error box on GitHub, so it is a blocking finding, not a warning.
+- Watch for a semicolon inside note or label text. It separates statements, truncates the block, and the error surfaces several lines later.
 
 ## 9. Agent files
 
