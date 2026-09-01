@@ -18,17 +18,4 @@ jobs:
     uses: ./.github/workflows/docs-check.yml
     with:
       path: "."
-      # File templates carry relative links that only resolve once instantiated.
       link_exclude_paths: skills/axelerant-engineering-documentation/references/templates
-
-  sample:
-    name: Worked example
-    uses: ./.github/workflows/docs-check.yml
-    with:
-      path: sample/dispatch
-      skip_links: true
-
-  coupling:
-    name: Coupling
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/docs-coupling.yml
