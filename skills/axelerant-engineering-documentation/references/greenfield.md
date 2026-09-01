@@ -26,6 +26,10 @@ At greenfield the README is a specification. Sections 1, 2, 3, 6 and 7 of the co
 ## Step 4 — Scaffold only what is real
 
 - **Tier 0**: README, `.axelerant/repo.yml`, `AGENTS.md`, `CLAUDE.md`. Nothing else. Do not create `docs/`.
+
+  `AGENTS.md` on day one holds only what you actually know: the two-surface table, the verification
+  commands, and any rule the team has already agreed. Pitfalls arrive later, when something has cost
+  someone a day. Do not pre-populate it with guesses.
 - **Tier 1**: add `docs/index.md` and `docs/architecture.md` (context diagram plus the intended approach). The other three files are written when there is something true to put in them.
 - **Tier 2**: add `docs/index.md`, `docs/explanation/architecture.md`, and `docs/adr/0001-*.md` for the founding stack decision. Folders are created when their first real file is.
 

@@ -27,6 +27,7 @@ Produce documentation that a stranger can act on, and that a linter can check. T
 | One ADR or one runbook needed | `references/contract.md`, sections 6 and 7, plus the templates |
 | "Is this repo compliant?" | Run `scripts/docs_audit.py` |
 | A diagram was written or changed | Run `scripts/mermaid_check.py`, then `--render` if `npx` is available |
+| The repo has a `CLAUDE.md` holding architecture or setup | `references/brownfield.md`, step 8 |
 
 ## Hard rules
 
@@ -36,6 +37,7 @@ Produce documentation that a stranger can act on, and that a linter can check. T
 - **No forward declarations.** Never write an index entry for a file that does not exist, and never write a status document about documentation you plan to write.
 - **Delete rather than migrate filler.** Per-feature catalogues, roadmap folders and docs-about-docs are removed, not relocated. Say what you deleted.
 - **Validate every diagram you write.** Run `scripts/mermaid_check.py <repo>` after writing any Mermaid block, and `--render` when `npx` is available. A diagram that fails to parse renders as a red error box on GitHub, which is worse than no diagram. The commonest cause is a semicolon inside note or label text: it separates statements and truncates the block.
+- **Keep the agent file in step with `docs/`.** Whenever you add, move or rename a page, update the jump table in `AGENTS.md` in the same change. A jump table with a dead entry is worse than none: it sends an agent to invent the answer.
 - **Stop at the contract.** Do not add `CONTRIBUTING.md`, `SECURITY.md`, badges, tables of contents or extra folders unless the user asks.
 
 ## Output

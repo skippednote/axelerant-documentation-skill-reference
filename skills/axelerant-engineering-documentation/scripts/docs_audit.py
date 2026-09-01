@@ -258,14 +258,67 @@ def check_mermaid(root):
         add("BLOCK", f"{where}" + (f" line {line}" if line else ""), msg)
 
 
-def check_agents(root):
-    a, c = root / "AGENTS.md", root / "CLAUDE.md"
+# Sections that belong in docs/ or the README, not in the agent file.
+MISPLACED = [
+    (re.compile(r"^#{1,6}\s*(architecture|system (overview|design)|how it (works|fits))",
+                re.I), "docs/explanation/architecture.md"),
+    (re.compile(r"^#{1,6}\s*(directory|repo(sitory)?|file|project) (structure|layout|map)",
+                re.I), "nowhere — the tree is the tree"),
+    (re.compile(r"^#{1,6}\s*(setup|install(ation)?|prerequisites|getting started|quick ?start)",
+                re.I), "README, Quick start"),
+    (re.compile(r"^#{1,6}\s*(deploy(ment)?|release process)", re.I),
+     "docs/how-to/deploy.md, or docs/operations.md at Tier 1"),
+    (re.compile(r"^#{1,6}\s*(dependencies|tech stack|features?)\b", re.I),
+     "docs/reference/, or delete it"),
+]
+# Backticked repo-relative paths in the jump table.
+PATHREF = re.compile(r"`([A-Za-z0-9_.\-]+(?:/[A-Za-z0-9_.\-]+)+)`")
+
+
+def check_agents(root, tier):
+    a, c, g = root / "AGENTS.md", root / "CLAUDE.md", root / "GEMINI.md"
+
+    if g.exists():
+        add("BLOCK", "GEMINI.md", "one agent file: AGENTS.md, with CLAUDE.md importing it")
+
     if not a.exists():
-        add("WARN", "AGENTS.md", "missing")
-    elif len(a.read_text().splitlines()) > 200:
-        add("WARN", "AGENTS.md", "over the 200-line cap")
-    if c.exists() and c.read_text().strip() not in ("@AGENTS.md",):
-        add("WARN", "CLAUDE.md", "should contain only '@AGENTS.md'")
+        if c.exists():
+            add("BLOCK", "CLAUDE.md",
+                "agent file is not AGENTS.md; rename it and leave CLAUDE.md as '@AGENTS.md'")
+        else:
+            add("WARN", "AGENTS.md", "missing")
+        return
+
+    text = a.read_text()
+    lines = text.splitlines()
+    if len(lines) > 200:
+        add("BLOCK", "AGENTS.md", f"{len(lines)} lines, cap is 200")
+
+    for line in lines:
+        for pat, dest in MISPLACED:
+            if pat.match(line.strip()):
+                add("BLOCK", "AGENTS.md",
+                    f"{line.strip()[:48]!r} belongs in {dest}")
+
+    # Only documentation targets. Source paths and symbols are not jump-table
+    # entries and are none of this check's business.
+    for m in PATHREF.finditer(text):
+        ref = m.group(1)
+        if "..." in ref or ref.startswith(("http", "@")):
+            continue
+        if not (ref.endswith(".md") or ref.endswith("/")):
+            continue
+        if not (root / ref).exists():
+            add("BLOCK", "AGENTS.md", f"points at {ref}, which does not exist")
+
+    if tier and tier > 0 and "docs/" not in text:
+        add("WARN", "AGENTS.md", "no jump table into docs/")
+
+    if c.exists():
+        if c.read_text().strip() != "@AGENTS.md":
+            add("BLOCK", "CLAUDE.md", "must contain only '@AGENTS.md'")
+    else:
+        add("WARN", "CLAUDE.md", "missing; Claude Code will not read AGENTS.md without it")
 
 
 def main():
@@ -280,7 +333,7 @@ def main():
     check_tree(root, tier, cfg["on_call"])
     check_docs_files(root, cfg)
     check_mermaid(root)
-    check_agents(root)
+    check_agents(root, tier)
 
     blocks = [f for f in findings if f[0] == "BLOCK"]
     warns = [f for f in findings if f[0] == "WARN"]

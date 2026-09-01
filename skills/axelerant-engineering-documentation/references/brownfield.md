@@ -73,13 +73,48 @@ Never invent an alert to fill the folder.
 
 Do not backfill a decision log. Write ADRs only for decisions you can source from a PR discussion, a design document, or the user's own account, and only where two options were genuinely on the table. Three well-sourced ADRs beat thirty reconstructed ones.
 
-## Step 8 — Clean up
+## Step 8 — The agent file
+
+Most repos already have one, and most of them hold the wrong things. An agent file that carries an
+architecture overview is a second copy of a fact that lives in `docs/`, and two copies is one fact
+and one future lie.
+
+Read the existing `CLAUDE.md`, `AGENTS.md` or `GEMINI.md` and move each section:
+
+| Found in the agent file | Goes to |
+|---|---|
+| Architecture, system overview, how it fits together | `docs/explanation/architecture.md` |
+| Directory or file layout | Delete. The tree is the tree. |
+| Setup, install, prerequisites | README `## Quick start` |
+| Deploy steps | `docs/how-to/deploy.md` |
+| Dependency or feature inventories | Delete |
+| Rules, guardrails, "never do X" | Stays |
+| Conventions that differ from the ecosystem default | Stays |
+| Pitfalls that have cost someone a day | Stays |
+| The commands that mean "it works" | Stays |
+
+Then:
+
+1. Rename to `AGENTS.md` if it is not already. It is the cross-tool name; Codex, Cursor and Copilot
+   read it.
+2. Replace `CLAUDE.md` with a single line: `@AGENTS.md`. Delete `GEMINI.md`.
+3. Open the file with the two-surface table from the template, so neither reader has to guess which
+   surface owns a fact.
+4. End it with a jump table into `docs/`, one line per destination. Every path must resolve — the
+   audit checks them, because a jump table with a dead entry sends an agent to invent the answer.
+5. Cap it at 200 lines. Instruction-following degrades past roughly 150 to 200 instructions, and a
+   context file that grows unchecked silently stops being obeyed.
+
+Preserve `.claude/` and `.cursor/` as they are. Hooks, skills and permissions are tool machinery,
+not documentation.
+
+## Step 9 — Clean up
 
 - Delete the files marked Delete.
 - Move stray root markdown into `docs/` under a real name, or delete it.
 - Add the docs CI workflow.
 - Disable the GitHub wiki if it is empty.
 
-## Step 9 — Report
+## Step 10 — Report
 
 Files created, modified, deleted. Sections left empty and the question that fills each. Files marked Ask. The audit result.

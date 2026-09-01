@@ -7,7 +7,7 @@
 
 ## Hard rules
 
-- `references/contract.md` and `scripts/docs_audit.py` change in the same commit. A contract the script does not enforce is a suggestion.
+- `skills/axelerant-engineering-documentation/references/contract.md` and the scripts beside it change in the same commit. A contract the script does not enforce is a suggestion.
 - Never relax a check to make this repo pass. Fix the repo, or change the contract deliberately and say so in the PR.
 - `sample/dispatch` must keep passing `--strict`. It is the executable proof that the contract is satisfiable.
 - Do not add a rule the script cannot check unless you say in the PR why it is unenforceable.
