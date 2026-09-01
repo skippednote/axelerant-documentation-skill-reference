@@ -6,6 +6,25 @@ on:
   pull_request:
 
 jobs:
+  workflows:
+    name: Workflow syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse every workflow file
+        run: |
+          python3 - <<'EOF'
+          import glob, sys, yaml
+          bad = 0
+          for f in glob.glob(".github/workflows/*.yml") + glob.glob("**/.github/workflows/*.yml", recursive=True):
+              try:
+                  yaml.safe_load(open(f))
+                  print("ok  ", f)
+              except Exception as e:
+                  print("FAIL", f, e); bad = 1
+          sys.exit(bad)
+          EOF
+
   self:
     name: This repo
     uses: ./.github/workflows/docs-check.yml

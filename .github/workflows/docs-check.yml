@@ -26,7 +26,7 @@ on:
           Space-separated paths the link checker skips. Use it for directories of
           file templates, whose relative links only resolve once instantiated.
         type: string
-        default: ""splitme
+        default: ""
 
 jobs:
   contract:
