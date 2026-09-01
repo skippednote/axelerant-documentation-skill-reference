@@ -184,7 +184,7 @@ def check_docs_files(root, cfg):
     for p in sorted(root.rglob("*.md")):
         rel = p.relative_to(root)
         s = str(rel)
-        if any(part in (".git", "node_modules", "vendor") for part in rel.parts):
+        if any(part in (".git", "node_modules", "vendor", ".docs-standard") for part in rel.parts):
             continue
         if ignored(rel):
             continue
@@ -247,7 +247,7 @@ def check_mermaid(root):
     mermaid_check.findings = []
     for f in sorted(root.rglob("*.md")):
         rel = f.relative_to(root)
-        if any(p in (".git", "node_modules", "vendor") for p in rel.parts):
+        if any(p in (".git", "node_modules", "vendor", ".docs-standard") for p in rel.parts):
             continue
         if ignored(rel):
             continue

@@ -13,8 +13,8 @@ Usage:  python3 mermaid_check.py [ROOT] [--render] [--keep DIR]
 Exit 1 on any finding.
 """
 import argparse
+import json
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -79,9 +79,13 @@ def render_check(path, index, body):
         src = Path(d) / "d.mmd"
         src.write_text(body)
         out = Path(d) / "d.svg"
+        # CI runners have no sandbox available to the browser puppeteer starts.
+        cfg = Path(d) / "puppeteer.json"
+        cfg.write_text(json.dumps({"args": ["--no-sandbox", "--disable-setuid-sandbox"]}))
         try:
             r = subprocess.run(
-                ["npx", "-y", "@mermaid-js/mermaid-cli@11", "-i", str(src), "-o", str(out)],
+                ["npx", "-y", "@mermaid-js/mermaid-cli@11",
+                 "-i", str(src), "-o", str(out), "-p", str(cfg)],
                 capture_output=True, text=True, timeout=180)
         except FileNotFoundError:
             print("npx not found; skipping the render pass", file=sys.stderr)
@@ -105,8 +109,9 @@ def main():
     root = Path(args.root).resolve()
 
     total = 0
+    skip = {".git", "node_modules", "vendor", ".docs-standard"}
     for f in sorted(root.rglob("*.md")):
-        if any(p in (".git", "node_modules", "vendor") for p in f.parts):
+        if any(p in skip for p in f.parts):
             continue
         text = f.read_text(errors="ignore")
         rel = f.relative_to(root)

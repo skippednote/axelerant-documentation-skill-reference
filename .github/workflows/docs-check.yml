@@ -123,6 +123,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
+      - name: Install the browser mermaid-cli renders with
+        run: npx -y puppeteer@23 browsers install chrome
       - name: Render every Mermaid block
         run: |
           python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py \
