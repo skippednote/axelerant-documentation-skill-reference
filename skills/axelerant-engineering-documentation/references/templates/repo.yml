@@ -1,0 +1,6 @@
+tier: 1                  # 0 | 1 | 2
+kind: site               # service | site | library | action | poc | docs
+owner: "@org/team"       # must match CODEOWNERS
+client: acme             # omit for internal repos
+on_call: false           # true -> docs/runbooks/ required
+docs_review_days: 90

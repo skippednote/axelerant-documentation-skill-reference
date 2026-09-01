@@ -1,0 +1,3 @@
+exclude = ['^https?://(localhost|.*\.internal|.*\.test)', '^https?://example\.']
+accept = [200, 206, 429]
+no_progress = true

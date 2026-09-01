@@ -1,0 +1,27 @@
+extends: existence
+message: "Fluff: '%s' carries no information. Cut it or replace it with the specific fact."
+level: error
+ignorecase: true
+tokens:
+  - comprehensive
+  - robust
+  - seamless(ly)?
+  - leverages?
+  - utilizes?
+  - cutting.edge
+  - state.of.the.art
+  - powerful
+  - rich set of
+  - wide range of
+  - it'?s important to note
+  - it'?s worth noting
+  - as we all know
+  - needless to say
+  - in today'?s fast.paced
+  - delve into
+  - a testament to
+  - plays a vital role
+  - this document aims to
+  - this section will cover
+  - in conclusion
+  - let'?s dive in

@@ -1,0 +1,98 @@
+name: docs-check
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Directory to audit, relative to the caller's repo root.
+        type: string
+        default: "."
+      strict:
+        description: Fail the job on blocking findings. Set false during a warn-only rollout.
+        type: boolean
+        default: true
+      ref:
+        description: Ref of the reference repo to pin the contract to.
+        type: string
+        default: "v1"
+      skip_vale:
+        type: boolean
+        default: false
+      skip_links:
+        type: boolean
+        default: false
+
+jobs:
+  contract:
+    name: Contract, frontmatter, placeholders, budgets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo under audit
+        uses: actions/checkout@v4
+
+      - name: Check out the contract
+        uses: actions/checkout@v4
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+
+      - name: Audit
+        run: |
+          python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/docs_audit.py \
+            "${{ inputs.path }}" ${{ inputs.strict && '--strict' || '' }}
+
+  markdownlint:
+    name: markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+      - name: Use the shared config when the repo has none
+        run: |
+          [ -f .markdownlint-cli2.jsonc ] || \
+            cp .docs-standard/.markdownlint-cli2.jsonc .
+      - uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md #.docs-standard"
+
+  vale:
+    name: Vale
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_vale }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+      - name: Use the shared style when the repo has none
+        run: |
+          if [ ! -f .vale.ini ]; then
+            cp .docs-standard/.vale.ini .
+            mkdir -p styles && cp -R .docs-standard/styles/Axelerant styles/
+          fi
+      - uses: errata-ai/vale-action@reviewdog
+        with:
+          reporter: github-pr-check
+          fail_on_error: true
+          filter_mode: nofilter
+
+  links:
+    name: Link check
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_links }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress --accept 200,206,429 --exclude-path .docs-standard
+            --exclude '^https?://(localhost|.*\.internal|.*\.test)'
+            "**/*.md"
+          fail: true

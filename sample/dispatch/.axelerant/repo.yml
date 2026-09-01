@@ -1,0 +1,5 @@
+tier: 2
+kind: service
+owner: "@axelerant/platform-team"
+on_call: true
+docs_review_days: 90

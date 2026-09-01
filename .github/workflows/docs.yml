@@ -1,0 +1,20 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  self:
+    name: This repo
+    uses: ./.github/workflows/docs-check.yml
+    with:
+      path: "."
+
+  sample:
+    name: Worked example
+    uses: ./.github/workflows/docs-check.yml
+    with:
+      path: sample/dispatch
+      skip_links: true

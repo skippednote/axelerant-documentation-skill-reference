@@ -1,0 +1,21 @@
+# .github/workflows/docs.yml — the whole enforcement setup for a repo.
+# Copy this file in. Nothing else is vendored; the contract and the checks
+# are pulled from the reference repo at the pinned ref.
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs:
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@v1
+    with:
+      path: "."
+      strict: true      # set false for the warn-only period, then flip
+      ref: v1
+
+  coupling:
+    if: github.event_name == 'pull_request'
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@v1

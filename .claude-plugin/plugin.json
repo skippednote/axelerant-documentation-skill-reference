@@ -1,0 +1,6 @@
+{
+  "name": "axelerant-engineering-documentation",
+  "version": "0.1.0",
+  "description": "Sets up and maintains repository documentation to the Axelerant Engineering Documentation Standard. Scaffolds greenfield repos, migrates brownfield ones, audits against the contract, and blocks generated filler.",
+  "author": { "name": "Axelerant" }
+}
