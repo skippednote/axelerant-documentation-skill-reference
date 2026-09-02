@@ -1,3 +1,7 @@
-# The style guide lists the banned register in prose, which is the one place
-# it must appear verbatim.
+# Two kinds of file are exempt, both for the same reason: they exist to
+# describe the rules, so they must contain what the rules reject.
+#
+#   the style guide lists the banned register in prose
+#   the templates carry relative links that resolve only once instantiated
 skills/*/references/anti-fluff.md
+skills/*/references/templates/*

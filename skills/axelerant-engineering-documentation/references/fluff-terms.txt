@@ -1,0 +1,26 @@
+# One term per line, treated as a case-insensitive regex fragment.
+# The single source for both the audit script and the Vale style.
+# Regenerate the Vale style with:
+#   docs_audit.py --emit-vale > styles/Axelerant/Fluff.yml
+comprehensive
+robust
+seamless(ly)?
+leverages?
+utilizes?
+cutting.edge
+state.of.the.art
+powerful
+rich set of
+wide range of
+it'?s important to note
+it'?s worth noting
+as we all know
+needless to say
+in today'?s fast.paced
+delve into
+a testament to
+plays a vital role
+this document aims to
+this section will cover
+in conclusion
+let'?s dive in

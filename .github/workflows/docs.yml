@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: python3 scripts/check_workflows.py
+      - name: The Vale style is generated, not hand-edited
+        run: |
+          python3 skills/axelerant-engineering-documentation/scripts/docs_audit.py \
+            --emit-vale > /tmp/Fluff.yml
+          diff -u styles/Axelerant/Fluff.yml /tmp/Fluff.yml
 
   self:
     name: This repo
