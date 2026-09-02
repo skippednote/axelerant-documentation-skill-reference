@@ -35,7 +35,7 @@
 
 ## Documentation
 
-- [What this is and how to navigate](docs/index.md)
+- [What this is and how to navigate](docs/README.md)
 - [Get it running locally](docs/getting-started.md) — <question it answers>
 - [How it is built and why](docs/architecture.md) — <question it answers>
 - [Deploy, roll back, and access](docs/operations.md) — <question it answers>

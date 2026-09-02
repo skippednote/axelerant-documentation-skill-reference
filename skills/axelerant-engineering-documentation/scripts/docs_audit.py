@@ -21,7 +21,7 @@ README_SECTIONS = [
     ("Common commands", True), ("How we work here", True), ("Ownership", True),
     ("Documentation", "tier1+"),
 ]
-TIER1_FILES = ["index.md", "getting-started.md", "architecture.md",
+TIER1_FILES = ["README.md", "getting-started.md", "architecture.md",
                "operations.md", "decisions.md"]
 TIER2_DIRS = ["how-to", "reference", "explanation", "adr"]
 BUDGETS = {"index": 300, "how-to": 800, "tutorial": 1200,
@@ -202,8 +202,8 @@ def check_tree(root, tier, on_call):
         for e in extra:
             add("BLOCK", f"docs/{e}/", "Tier 1 docs/ is flat; only adr/ and assets/ allowed")
     if tier == 2:
-        if not (docs / "index.md").exists():
-            add("BLOCK", "docs/index.md", "required at Tier 2")
+        if not (docs / "README.md").exists():
+            add("BLOCK", "docs/README.md", "required at Tier 2")
         for d in TIER2_DIRS:
             if not (docs / d).is_dir():
                 add("BLOCK", f"docs/{d}/", "required at Tier 2")

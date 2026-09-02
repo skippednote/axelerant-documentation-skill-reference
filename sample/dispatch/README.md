@@ -55,7 +55,7 @@ Branch from `main` as `<ticket>-<short-slug>`. Commits are prefixed with the tic
 
 ## Documentation
 
-- [Documentation index](docs/index.md) — where everything is
+- [Documentation index](docs/README.md) — where everything is
 - [Run it locally](docs/how-to/run-locally.md) — how do I get a working copy?
 - [Deploy and roll back](docs/how-to/deploy.md) — how does a change reach production?
 - [Architecture](docs/explanation/architecture.md) — why is it split into API and dispatcher?

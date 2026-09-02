@@ -47,7 +47,7 @@ Vendor scaffold READMEs — text describing a generator's template rather than t
 | `local_setup.md`, `tools.md` | Tier 1 `getting-started.md`; Tier 2 `how-to/run-locally.md` |
 | `how_to_work.md` | README `## How we work here` |
 | `faqs.md` | Split: each real question becomes a `how-to/` page. Delete the rest. |
-| `links.md` | `index.md` jump table |
+| `links.md` | the `docs/README.md` jump table |
 | `content_types.md`, `custom_modules.md` | `reference/` |
 
 The four Platform-tier folders — `how-to/`, `reference/`, `explanation/`, `adr/` — are required
@@ -64,7 +64,7 @@ For each command you are about to document, run it. Record what actually happene
 - Only set `last_verified` on files whose commands you executed.
 
 Write in this order, so later files can link to earlier ones: `.axelerant/repo.yml`, README,
-then — at Project and Platform tier only — `docs/index.md` and the rest of `docs/`, with `AGENTS.md`
+then — at Project and Platform tier only — `docs/README.md` and the rest of `docs/`, with `AGENTS.md`
 and `CLAUDE.md` last. A Component repository gets no `docs/` at all; creating one is a blocking
 finding, not a head start.
 

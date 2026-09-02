@@ -23,6 +23,10 @@ docs_review_days: 90     # staleness warning threshold
 
 Subfolders appear when a folder would hold three or more files. Not before.
 
+The index of any directory is `README.md`, not `index.md`. GitHub renders it when someone browses
+the folder, so the front door costs no clicks and needs no build step. This applies at every level:
+`docs/README.md`, `docs/adr/README.md`, `docs/runbooks/README.md`.
+
 ## 2. README — all tiers
 
 Cap 400 lines. Answers one question: can a stranger run this and know who to ask.
@@ -46,7 +50,7 @@ Order is fixed. Sections are not renamed.
 Exactly these five. No others, no subfolders except `adr/` once a second decision exists.
 
 ```
-docs/index.md              what this is, who for, the map
+docs/README.md             what this is, who for, the map
 docs/getting-started.md    laptop to first working change
 docs/architecture.md       arc42 subset + one C4 system context diagram
 docs/operations.md         environments, deploy, rollback, access, monitoring
@@ -56,7 +60,7 @@ docs/decisions.md          running decision log
 ## 4. docs/ — Tier 2
 
 ```
-docs/index.md
+docs/README.md
 docs/tutorials/            learning by doing. 1-3 files.
 docs/how-to/               task recipes. Largest folder.
 docs/reference/            lookup. Generated where a generator exists.

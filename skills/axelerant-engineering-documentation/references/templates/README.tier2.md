@@ -40,5 +40,5 @@ The index and the architecture page are the two a Platform-tier repo always has;
 what has been written, and the runbooks entry belongs here only when `on_call` is true. A link to a
 page that does not exist yet is a blocking finding, not a placeholder.
 
-- [What this is and how to navigate](docs/index.md) — <question it answers>
+- [What this is and how to navigate](docs/README.md) — <question it answers>
 - [How it is built and why](docs/explanation/architecture.md) — <question it answers>
