@@ -1,6 +1,11 @@
-# .github/workflows/docs.yml — the whole enforcement setup for a repo.
-# Copy this file in. Nothing else is vendored; the contract and the checks are
-# pulled from the reference repo at the pinned ref.
+# .github/workflows/docs.yml — the whole enforcement setup for a repository.
+# Copy this file in. Nothing else is vendored; the contract, both scripts, the
+# Vale style and the markdownlint config are read from the pinned ref.
+#
+# Both `uses` entries and `ref` name the same full commit SHA. A tag can be
+# moved, and whoever moves it changes code that runs in every adopting
+# repository, one of which holds `pull-requests: write`.
+# Bump all three together when you adopt a new version of the standard.
 name: docs
 
 on:
@@ -10,13 +15,13 @@ on:
 
 jobs:
   docs:
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@v1
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@18324364c38a9338a5a0290192c76d9826811c89
     with:
       path: "."
-      strict: true      # set false for the warn-only period, then flip
-      ref: v1
+      strict: true      # false while a repository is still being brought up
+      ref: 18324364c38a9338a5a0290192c76d9826811c89
       # Directories of file templates, whose relative links resolve only once
-      # the template is instantiated. Omit if the repo has none.
+      # the template is instantiated. Omit if the repository has none.
       # link_exclude_paths: path/to/templates
 
   coupling:
@@ -26,4 +31,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@v1
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@18324364c38a9338a5a0290192c76d9826811c89
+    with:
+      ref: 18324364c38a9338a5a0290192c76d9826811c89

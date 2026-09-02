@@ -39,3 +39,4 @@
 - [Get it running locally](docs/getting-started.md) — <question it answers>
 - [How it is built and why](docs/architecture.md) — <question it answers>
 - [Deploy, roll back, and access](docs/operations.md) — <question it answers>
+- [Why it is shaped this way](docs/decisions.md) — <question it answers>

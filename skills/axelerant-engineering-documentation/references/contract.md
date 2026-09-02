@@ -48,7 +48,7 @@ Exactly these five. No others, no subfolders except `adr/` once a second decisio
 ```
 docs/index.md              what this is, who for, the map
 docs/getting-started.md    laptop to first working change
-docs/architecture.md       arc42 subset + one C4 container diagram
+docs/architecture.md       arc42 subset + one C4 system context diagram
 docs/operations.md         environments, deploy, rollback, access, monitoring
 docs/decisions.md          running decision log
 ```
@@ -158,7 +158,7 @@ A single generic `operations/runbook.md` does not satisfy this.
 
 ## 11. Enforcement
 
-Copy `references/templates/docs-workflow.yml` to `.github/workflows/docs.yml`. It calls the shared reusable workflow, so the contract, the audit script, the Vale style and the markdownlint config are pulled at a pinned ref rather than vendored into each repo.
+Copy `references/templates/docs-workflow.yml` to `.github/workflows/docs.yml`. It pins the reusable workflows and the contract to one immutable commit; a tag can be moved, and one of those workflows holds `pull-requests: write`. It calls the shared reusable workflow, so the contract, the audit script, the Vale style and the markdownlint config are pulled at a pinned ref rather than vendored into each repo.
 
 | Check | Level | Fails on |
 |---|---|---|

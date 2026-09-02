@@ -41,7 +41,9 @@ A new repo has at least one decision worth recording: why this stack, this hosti
 
 ## Step 6 — Wire the gate on day one
 
-Add the docs CI workflow immediately. A new repo is the only chance to have the check pass from the first commit.
+Add the docs CI workflow immediately, with `strict: false`. A repository that deliberately defers
+sections cannot pass the blocking checks yet, and a gate that fails on day one gets deleted on day
+two. Flip `strict: true` in the same pull request that completes the tier's required set.
 
 ## Step 7 — Report
 

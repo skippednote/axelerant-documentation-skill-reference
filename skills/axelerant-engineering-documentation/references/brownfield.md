@@ -9,7 +9,7 @@ Gather, and keep the notes; they become the docs.
 ```bash
 ls -a                                   # root files, stray markdown, agent files
 cat .axelerant/repo.yml 2>/dev/null     # tier already declared?
-find docs doc documentation -type f 2>/dev/null | head -50
+find docs doc documentation -type f 2>/dev/null   # every file; Step 3 triages all of them
 ls .github/workflows/ 2>/dev/null       # what CI actually does
 cat CODEOWNERS .github/CODEOWNERS 2>/dev/null
 git log -1 --format=%cd                 # is this repo alive?
@@ -28,7 +28,7 @@ For every existing doc file, one of four verdicts. Record it; report it at the e
 
 | Verdict | When | Action |
 |---|---|---|
-| **Keep** | Accurate and belongs in the new layout | Move to its contract path, add frontmatter |
+| **Keep** | Accurate and belongs in the new layout | Move to its contract path. Add frontmatter only if it lands under `docs/` — the README and `AGENTS.md` never carry it |
 | **Fix** | Right subject, wrong or stale content | Rewrite from the code, then verify |
 | **Delete** | Per-feature catalogue, roadmap, docs-about-docs, vendor scaffold text, forward declarations | Delete. Do not migrate. |
 | **Ask** | Cannot tell whether it is still true | Leave in place, list it for the user |
@@ -50,7 +50,9 @@ Vendor scaffold READMEs — text describing a generator's template rather than t
 | `links.md` | `index.md` jump table |
 | `content_types.md`, `custom_modules.md` | `reference/` |
 
-If a target folder would hold fewer than three files, keep those files flat at the tier below.
+The four Platform-tier folders — `how-to/`, `reference/`, `explanation/`, `adr/` — are required
+whatever they hold, because the audit blocks when one is missing and Git does not keep an empty
+directory. The three-file rule governs folders you invent, not these.
 
 ## Step 5 — Verify, then write
 
@@ -61,7 +63,10 @@ For each command you are about to document, run it. Record what actually happene
 - Version numbers come from CI and the lockfile.
 - Only set `last_verified` on files whose commands you executed.
 
-Write in this order, so later files can link to earlier ones: `.axelerant/repo.yml`, README, `docs/index.md`, the rest of `docs/`, `AGENTS.md` and `CLAUDE.md` last.
+Write in this order, so later files can link to earlier ones: `.axelerant/repo.yml`, README,
+then — at Project and Platform tier only — `docs/index.md` and the rest of `docs/`, with `AGENTS.md`
+and `CLAUDE.md` last. A Component repository gets no `docs/` at all; creating one is a blocking
+finding, not a head start.
 
 ## Step 6 — Runbooks, only from real alerts
 

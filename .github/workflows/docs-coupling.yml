@@ -2,6 +2,11 @@ name: docs-coupling
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        description: Ref of the reference repo the script is read from.
+        type: string
+        default: "v1"
 
 permissions:
   contents: read
@@ -12,13 +17,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out the repo under review
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      # The caller vendors nothing, so the script comes from here, not from
+      # the repository being checked.
+      - name: Check out the standard
+        uses: actions/checkout@v7
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+
       - name: Comment when code moved and docs did not
         env:
           GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR: ${{ github.event.pull_request.number }}
-        run: bash scripts/docs_coupling.sh
+        run: bash .docs-standard/scripts/docs_coupling.sh

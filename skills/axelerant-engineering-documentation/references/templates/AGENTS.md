@@ -7,9 +7,12 @@
 
 Facts live in `docs/`. This file links, never duplicates.
 
+At Component tier there is no `docs/`, so drop the table above and the jump table below, and keep
+the rules, pitfalls and verification commands.
+
 ## Hard rules
 
-- <What must never happen in this repo.>
+- <What must never happen in this repository.>
 - <What requires a human decision.>
 
 ## Conventions that differ from the defaults
@@ -28,9 +31,12 @@ Facts live in `docs/`. This file links, never duplicates.
 
 ## Where to look
 
+Every path here must resolve, so build this table from the files that exist. At Project tier they
+are flat under `docs/`; at Platform tier they sit under `how-to/`, `reference/` and `explanation/`.
+
 | Need | Go to |
 |---|---|
-| Run it locally | `docs/how-to/run-locally.md` |
-| Deploy | `docs/how-to/deploy.md` |
-| Why it is shaped this way | `docs/explanation/architecture.md` |
-| A past decision | `docs/adr/` |
+| Run it locally | <docs/getting-started.md at Project, docs/how-to/run-locally.md at Platform> |
+| Deploy | <docs/operations.md at Project, docs/how-to/deploy.md at Platform> |
+| Why it is shaped this way | <docs/architecture.md at Project, docs/explanation/architecture.md at Platform> |
+| A past decision | <docs/decisions.md at Project, docs/adr/ at Platform> |

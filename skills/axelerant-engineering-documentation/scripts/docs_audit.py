@@ -56,7 +56,7 @@ BANNED_PATHS = [
 ROOT_MD_ALLOWED = {"README.md", "AGENTS.md", "CLAUDE.md", "LICENSE.md",
                    "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md"}
 FM_REQUIRED = ["title", "type", "owner", "last_verified"]
-FM_REQUIRED_ADR = ["title", "type", "owner", "status", "date"]
+FM_REQUIRED_ADR = ["title", "type", "owner", "status", "date", "deciders"]
 ADR_STATUS = re.compile(r"^(proposed|accepted|deprecated|superseded by \d{4})$")
 
 findings = []
@@ -98,10 +98,21 @@ def read_repo_yml(root):
             continue
         k, v = line.split(":", 1)
         cfg[k.strip()] = v.strip().strip('"\'')
-    if cfg.get("tier") is None:
+    raw = cfg.get("tier")
+    if raw is None:
         add("BLOCK", ".axelerant/repo.yml", "no tier declared")
     else:
-        cfg["tier"] = int(cfg["tier"])
+        try:
+            tier = int(str(raw).strip())
+        except ValueError:
+            add("BLOCK", ".axelerant/repo.yml", f"tier is not a number: {raw!r}")
+            tier = None
+        else:
+            if tier not in (0, 1, 2):
+                add("BLOCK", ".axelerant/repo.yml",
+                    f"tier {tier} is not one of 0, 1, 2")
+                tier = None
+        cfg["tier"] = tier
     cfg["on_call"] = str(cfg.get("on_call", "false")).lower() == "true"
     cfg["docs_review_days"] = int(cfg.get("docs_review_days", 90) or 90)
     return cfg

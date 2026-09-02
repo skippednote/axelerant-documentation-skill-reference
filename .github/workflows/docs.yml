@@ -41,3 +41,5 @@ jobs:
       contents: read
       pull-requests: write
     uses: ./.github/workflows/docs-coupling.yml
+    with:
+      ref: ${{ github.sha }}

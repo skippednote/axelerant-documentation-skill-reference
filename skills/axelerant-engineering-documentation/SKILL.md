@@ -28,6 +28,7 @@ Produce documentation that a stranger can act on, and that a linter can check. T
 | "Is this repo compliant?" | Run `scripts/docs_audit.py` |
 | A diagram was written or changed | Run `scripts/mermaid_check.py`, then `--render` if `npx` is available |
 | The repo has a `CLAUDE.md` holding architecture or setup | `references/brownfield.md`, step 8 |
+| Picking a README or agent-file template | `references/templates/` — they are per tier; using the wrong one produces dead links |
 
 ## Hard rules
 

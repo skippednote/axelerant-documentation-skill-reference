@@ -9,7 +9,7 @@ Two layers, because they catch different things:
   Render (--render, needs npx) — hands each block to mermaid-cli, which is the
   only authoritative answer to "does this render". Used in CI.
 
-Usage:  python3 mermaid_check.py [ROOT] [--render] [--keep DIR]
+Usage:  python3 mermaid_check.py [ROOT] [--render]
 Exit 1 on any finding.
 """
 import argparse
@@ -21,6 +21,10 @@ import tempfile
 from pathlib import Path
 
 BLOCK = re.compile(r"```mermaid[^\n]*\n(.*?)```", re.S)
+
+# Exact, not a range. npx installs whatever matches before it runs, so a range
+# means the renderer gating every repository can change without review.
+MMDC_VERSION = "11.4.2"
 
 KNOWN = {
     "graph", "flowchart", "sequenceDiagram", "classDiagram", "stateDiagram",
@@ -84,11 +88,13 @@ def render_check(path, index, body):
         cfg.write_text(json.dumps({"args": ["--no-sandbox", "--disable-setuid-sandbox"]}))
         try:
             r = subprocess.run(
-                ["npx", "-y", "@mermaid-js/mermaid-cli@11",
+                ["npx", "-y", f"@mermaid-js/mermaid-cli@{MMDC_VERSION}",
                  "-i", str(src), "-o", str(out), "-p", str(cfg)],
                 capture_output=True, text=True, timeout=180)
         except FileNotFoundError:
-            print("npx not found; skipping the render pass", file=sys.stderr)
+            add(path, index, 0,
+                "npx not found, so the render pass could not run; "
+                "install Node.js or drop --render")
             return False
         except subprocess.TimeoutExpired:
             add(path, index, 0, "mermaid-cli timed out")
