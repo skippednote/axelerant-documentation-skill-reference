@@ -15,11 +15,11 @@ on:
 
 jobs:
   docs:
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@18324364c38a9338a5a0290192c76d9826811c89
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@e19feffe55fdca5603cbc7e83a1d5910c48bf9a4
     with:
       path: "."
       strict: true      # false while a repository is still being brought up
-      ref: 18324364c38a9338a5a0290192c76d9826811c89
+      ref: e19feffe55fdca5603cbc7e83a1d5910c48bf9a4
       # Directories of file templates, whose relative links resolve only once
       # the template is instantiated. Omit if the repository has none.
       # link_exclude_paths: path/to/templates
@@ -31,6 +31,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@18324364c38a9338a5a0290192c76d9826811c89
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@e19feffe55fdca5603cbc7e83a1d5910c48bf9a4
     with:
-      ref: 18324364c38a9338a5a0290192c76d9826811c89
+      ref: e19feffe55fdca5603cbc7e83a1d5910c48bf9a4
