@@ -6,8 +6,10 @@ Two layers, because they catch different things:
   Static (default, no dependencies) — the footguns that produce a rendered
   parse error on GitHub. Cheap enough to run on every save.
 
-  Render (--render, needs npx) — hands each block to mermaid-cli, which is the
-  only authoritative answer to "does this render". Used in CI.
+  Render (--render, needs a local mmdc) — hands each block to mermaid-cli,
+  which is the only authoritative answer to "does this render". Used in CI,
+  where the renderer comes from the committed lockfile. Never fetched at run
+  time.
 
 Usage:  python3 mermaid_check.py [ROOT] [--render]
 Exit 1 on any finding.
