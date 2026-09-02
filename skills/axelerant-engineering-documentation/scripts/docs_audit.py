@@ -114,7 +114,20 @@ def read_repo_yml(root):
                 tier = None
         cfg["tier"] = tier
     cfg["on_call"] = str(cfg.get("on_call", "false")).lower() == "true"
-    cfg["docs_review_days"] = int(cfg.get("docs_review_days", 90) or 90)
+
+    days = cfg.get("docs_review_days", 90) or 90
+    try:
+        days = int(str(days).strip())
+    except ValueError:
+        add("BLOCK", ".axelerant/repo.yml",
+            f"docs_review_days is not a number: {days!r}")
+        days = 90
+    else:
+        if days < 1:
+            add("BLOCK", ".axelerant/repo.yml",
+                f"docs_review_days must be positive, got {days}")
+            days = 90
+    cfg["docs_review_days"] = days
     return cfg
 
 

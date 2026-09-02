@@ -123,9 +123,14 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
-      - name: Install the browser mermaid-cli renders with
-        run: npx -y puppeteer@23 browsers install chrome
+      - name: Install the pinned renderer from the lockfile
+        working-directory: .docs-standard
+        run: |
+          npm ci
+          npx puppeteer browsers install chrome
       - name: Render every Mermaid block
+        env:
+          MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
         run: |
           python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py \
             "${{ inputs.path }}" --render

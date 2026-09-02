@@ -35,9 +35,10 @@
 
 ## Documentation
 
-- [What this is and how to navigate](docs/index.md)
-- [Get it running locally](docs/how-to/run-locally.md) — <question it answers>
-- [Deploy and roll back](docs/how-to/deploy.md) — <question it answers>
+Build this list from pages that exist. Four to eight entries, each with the question it answers.
+The index and the architecture page are the two a Platform-tier repo always has; the rest depend on
+what has been written, and the runbooks entry belongs here only when `on_call` is true. A link to a
+page that does not exist yet is a blocking finding, not a placeholder.
+
+- [What this is and how to navigate](docs/index.md) — <question it answers>
 - [How it is built and why](docs/explanation/architecture.md) — <question it answers>
-- [Past decisions](docs/adr/) — <question it answers>
-- [An alert fired, what now](docs/runbooks/) — <question it answers>

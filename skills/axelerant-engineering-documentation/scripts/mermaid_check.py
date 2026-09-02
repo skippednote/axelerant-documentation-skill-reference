@@ -14,7 +14,9 @@ Exit 1 on any finding.
 """
 import argparse
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,9 +24,27 @@ from pathlib import Path
 
 BLOCK = re.compile(r"```mermaid[^\n]*\n(.*?)```", re.S)
 
-# Exact, not a range. npx installs whatever matches before it runs, so a range
-# means the renderer gating every repository can change without review.
-MMDC_VERSION = "11.4.2"
+# The renderer is never fetched at run time. `npx` installs before it executes,
+# so it would run an artifact nobody reviewed, on every repository, in a job
+# that gates merges. CI installs it from the committed lockfile with `npm ci`
+# and this looks for that local binary.
+MMDC_CANDIDATES = (
+    "node_modules/.bin/mmdc",
+    "../node_modules/.bin/mmdc",
+)
+
+
+def find_mmdc(root):
+    """Locate a locally installed mmdc. Never install one."""
+    env = os.environ.get("MMDC_BIN")
+    if env and Path(env).exists():
+        return env
+    for rel in MMDC_CANDIDATES:
+        c = (root / rel).resolve()
+        if c.exists():
+            return str(c)
+    found = shutil.which("mmdc")
+    return found
 
 KNOWN = {
     "graph", "flowchart", "sequenceDiagram", "classDiagram", "stateDiagram",
@@ -78,7 +98,7 @@ def static_check(path, index, body):
         add(path, index, 0, f"{opens} block opener(s) and {ends} end(s)")
 
 
-def render_check(path, index, body):
+def render_check(path, index, body, mmdc):
     with tempfile.TemporaryDirectory() as d:
         src = Path(d) / "d.mmd"
         src.write_text(body)
@@ -88,13 +108,10 @@ def render_check(path, index, body):
         cfg.write_text(json.dumps({"args": ["--no-sandbox", "--disable-setuid-sandbox"]}))
         try:
             r = subprocess.run(
-                ["npx", "-y", f"@mermaid-js/mermaid-cli@{MMDC_VERSION}",
-                 "-i", str(src), "-o", str(out), "-p", str(cfg)],
+                [mmdc, "-i", str(src), "-o", str(out), "-p", str(cfg)],
                 capture_output=True, text=True, timeout=180)
-        except FileNotFoundError:
-            add(path, index, 0,
-                "npx not found, so the render pass could not run; "
-                "install Node.js or drop --render")
+        except OSError as e:
+            add(path, index, 0, f"could not run {mmdc}: {e}")
             return False
         except subprocess.TimeoutExpired:
             add(path, index, 0, "mermaid-cli timed out")
@@ -114,6 +131,15 @@ def main():
     args = ap.parse_args()
     root = Path(args.root).resolve()
 
+    mmdc = None
+    if args.render:
+        mmdc = find_mmdc(root)
+        if not mmdc:
+            print("mermaid-check: --render needs a local mmdc. Run `npm ci` in "
+                  "the standard's checkout, or set MMDC_BIN. Refusing to fetch "
+                  "a renderer at run time.")
+            return 1
+
     total = 0
     skip = {".git", "node_modules", "vendor", ".docs-standard"}
     for f in sorted(root.rglob("*.md")):
@@ -125,7 +151,7 @@ def main():
             total += 1
             static_check(rel, index, body)
             if args.render:
-                render_check(rel, index, body)
+                render_check(rel, index, body, mmdc)
 
     mode = "static + render" if args.render else "static"
     print(f"mermaid-check ({mode}): {total} block(s), {len(findings)} finding(s)")

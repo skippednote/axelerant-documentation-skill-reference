@@ -1,0 +1,8 @@
+{
+  "name": "axelerant-documentation-skill-reference",
+  "private": true,
+  "description": "Pins the Mermaid renderer used by the diagram check.",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "11.4.2"
+  }
+}

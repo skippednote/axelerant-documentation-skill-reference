@@ -23,10 +23,13 @@ deciders: ["@owner", "@team"]
 ## Consequences
 
 **Good**
+
 - <consequence>
 
 **Bad**
+
 - <consequence — this list is mandatory>
 
 **Forecloses**
+
 - <what is now harder or impossible>
