@@ -34,3 +34,7 @@ For executable procedures, first print an approved plan using `scripts/verify_is
 ## Completion
 
 Name files changed, executed checks, evidence dates, manual-review gaps and any blocked release steps. The organization plugin already exists; do not claim this revision has reached it without a successful distribution receipt.
+
+## Publishing a book
+
+Run `scripts/build_book.py <repo>`, adding `--pdf` when asked. The spine is `.axelerant/book.yml` and only reorders; never write pages to fill a book out, and never refresh an evidence date because a book was assembled.

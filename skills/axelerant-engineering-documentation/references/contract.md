@@ -256,6 +256,28 @@ The organization plugin is available in the Claude app. Use the surfaces availab
 
 Repository commands are untrusted input. The supplied isolated runner uses a preinstalled immutable image, no host mount, no network, an empty command environment and resource limits. Without Docker or an explicitly approved plan it prints the plan and stops. It does not stamp dates automatically. Docker isolation reduces risk; it is not a guarantee against container-runtime vulnerabilities or an untrusted image. Human review approves the image and commands. Never grant network or production access merely to make verification pass.
 
+## Books and PDFs
+
+<!-- check: book -->
+
+The tree above is already a book: tiers fix the chapter set, directory indexes open sections, and frontmatter supplies titles, owners and evidence. Publishing restates nothing.
+
+```text
+python3 scripts/build_book.py <repo> --pdf
+```
+
+Output is one self-contained HTML file with print rules, and optionally a PDF produced by the same headless browser the diagram check already pins. No documentation site, no LaTeX and no second toolchain. Diagrams are rendered to inline SVG, because a printed page has no live renderer, and cross-page links become internal anchors.
+
+Chapters follow reading order rather than folder order: overview, tutorials, how-to, reference, explanation, decision records, runbooks. A Project repository publishes its five files in contract order followed by its decision records. Within a folder the index comes first, then pages in filename order. Component repositories have a README, not a book.
+
+`.axelerant/book.yml` is optional and only reorders. It uses the same metadata dialect as `repo.yml`, and naming a page that does not exist is an error rather than a silent omission:
+
+```yaml
+how-to: ["run-locally.md", "deploy.md"]
+```
+
+Every page keeps the evidence date and method it was published with, printed beside its title. The assembly date is on the cover and is not evidence of anything. `visibility` prints as a cover banner on internal and client-confidential books; the banner is a label, not a control, so distribution stays a human decision.
+
 ## Continuous integration and governance
 
 Adopting workflows pin shared code and contract data to the same reviewed 40-character commit. The shipped `docs-workflow.yml` template is already pinned and can be copied as it stands; `scripts/render_workflow.py` generates the same file against any other reviewed commit. The reference repository's own workflow uses its current checkout, not a prior tag. Local additions may extend policy; they may not replace the shared configuration with weaker rules.

@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 RULES = {
     'config', 'ownership', 'readme', 'tree', 'metadata', 'freshness',
     'adr', 'alerts', 'agents', 'paths', 'placeholders', 'register', 'links', 'diagrams',
+    'book',
 }
 OWNER = re.compile(r'@[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z')
 ADR_NAME = re.compile(r'\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md\Z')
@@ -33,6 +34,7 @@ SKIP = {'.git','node_modules','.venv','__pycache__','.docs-standard','.runtime',
 ROOT_MD = {'README.md','AGENTS.md','CLAUDE.md','LICENSE.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md'}
 SECTIONS = ['Status','Requirements','Quick start','Common commands','How we work here','Ownership']
 PLATFORM = {'tutorials','how-to','reference','explanation','adr'}
+BOOK_SECTIONS = PLATFORM | {'runbooks'}
 
 
 def scalar_yaml(text: str) -> dict:
@@ -43,7 +45,8 @@ def scalar_yaml(text: str) -> dict:
             continue
         if line != line.lstrip():
             raise ValueError(f'line {number}: nested YAML is unsupported')
-        match = re.fullmatch(r'([a-z_]+):\s*(.*)', line)
+        # Hyphens are allowed so a key can name a folder, such as how-to.
+        match = re.fullmatch(r'([a-z][a-z0-9_-]*):\s*(.*)', line)
         if not match:
             raise ValueError(f'line {number}: expected key: scalar')
         key, value = match.groups()
@@ -224,6 +227,27 @@ class Audit:
                 self.ignore[rule].append(pattern.strip())
         return not any(f['rule']=='config' for f in self.findings)
 
+    def book(self):
+        """An optional spine only reorders, so a wrong name is a silent omission."""
+        p = self.root/'.axelerant/book.yml'
+        if not p.is_file():
+            return
+        if self.cfg.get('tier') == 0:
+            self.add('book','.axelerant/book.yml','Component repositories publish a README, not a book')
+            return
+        try:
+            declared = scalar_yaml(p.read_text())
+        except ValueError as e:
+            self.add('book','.axelerant/book.yml',str(e)); return
+        for key, value in declared.items():
+            if key not in BOOK_SECTIONS:
+                self.add('book','.axelerant/book.yml',f'unknown section {key}'); continue
+            if not isinstance(value, list):
+                self.add('book','.axelerant/book.yml',f'{key} must be a list of quoted filenames'); continue
+            for name in value:
+                if not (self.root/'docs'/key/name).is_file():
+                    self.add('book','.axelerant/book.yml',f'{key} names a missing page: {name}')
+
     def readme(self):
         p=self.root/'README.md'
         if not p.is_file(): self.add('readme','README.md','missing'); return
@@ -394,7 +418,7 @@ class Audit:
 
     def run(self):
         if not self.config(): return self.findings
-        self.readme(); self.tree(); self.documents(); self.alerts(); self.agents(); self.diagrams()
+        self.readme(); self.tree(); self.documents(); self.alerts(); self.agents(); self.diagrams(); self.book()
         decisions=[(path,meta,body) for path,(meta,body) in self.pages.items() if meta.get('type')=='adr']
         numbers=[Path(path).name[:4] for path,_,_ in decisions]
         if len(numbers)!=len(set(numbers)): self.add('adr','adr/','duplicate ADR numbers')

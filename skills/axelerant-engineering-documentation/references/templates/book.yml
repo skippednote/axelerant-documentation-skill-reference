@@ -1,0 +1,12 @@
+# .axelerant/book.yml — optional. Without it the book still builds.
+#
+# The default order is the reading order: overview, tutorials, how-to,
+# reference, explanation, decision records, runbooks. Within a folder its
+# README comes first and the rest follow in filename order.
+#
+# Declare a folder here only to pull specific pages to the front. Anything
+# unlisted follows them, still in filename order. Values use the same metadata
+# dialect as repo.yml: a JSON-style list of quoted strings.
+
+how-to: ["run-locally.md", "deploy.md"]
+explanation: ["architecture.md", "data-model.md"]

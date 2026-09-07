@@ -16,6 +16,7 @@
 | register | Denied vocabulary outside literals | Clear prose and source-backed explanation |
 | links | Local paths and heading anchors | External/authenticated destination correctness |
 | diagrams | Nonempty fences and required C4 presence | Render success and architectural accuracy |
+| book | Spine resolves, declared pages exist, every page assembles | Whether the assembled order reads well |
 
 The rule-coverage check matches IDs with negative fixtures. It is not proof of semantic correctness. Run `make test` to exercise fixtures and `make verify` for the local merge check. The executable sample separately runs HTTP, retries, concurrency, recovery and isolated response exercises.
 

@@ -1,6 +1,6 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/src
-.PHONY: up init run worker worker-once send status test smoke lint docs-check verify package clean
+.PHONY: up init run worker worker-once send status test smoke lint docs-check verify book book-pdf package clean
 up init:
 	$(PYTHON) -m dispatch init
 run:
@@ -22,6 +22,10 @@ lint:
 docs-check:
 	$(PYTHON) ../../skills/axelerant-engineering-documentation/scripts/docs_audit.py . --strict
 verify: lint test docs-check
+book:
+	$(PYTHON) ../../scripts/build_book.py . --title dispatch
+book-pdf:
+	$(PYTHON) ../../scripts/build_book.py . --title dispatch --pdf
 package:
 	$(PYTHON) scripts/package_example.py
 clean:

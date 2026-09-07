@@ -1,0 +1,4 @@
+# Pull the two pages a new reader needs first to the front of their folders.
+# Anything unlisted follows, in filename order.
+how-to: ["run-locally.md", "deploy.md"]
+explanation: ["architecture.md", "delivery-semantics.md"]

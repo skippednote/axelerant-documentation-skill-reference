@@ -41,6 +41,8 @@ In the Claude app, use the organization-provided plugin. Copying only the skill 
 | `make plugin-check` | Validates the manifest, skill and Claude import |
 | `make workflow-check` | Validates YAML, action pins and reusable inputs |
 | `make coverage` | Compares declared rule IDs with implemented rules |
+| `make book` | Assembles the example documentation into one HTML book |
+| `make book-pdf` | Same, and prints it to PDF with the pinned browser |
 | `make verify` | Runs all locally available checks |
 | `make verify-release` | Requires lockfile, browser render and official plugin validation |
 | `npm install --package-lock-only --ignore-scripts` | Refreshes the lockfile for reviewed package versions |

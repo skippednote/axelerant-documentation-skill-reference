@@ -61,6 +61,15 @@ class RuleTests(unittest.TestCase):
         p=self.root/'docs/README.md';p.write_text(p.read_text()+'\n[Missing](missing.md)\n');self.assert_rule('links')
     def test_diagrams(self):
         self.replace('docs/explanation/architecture.md','C4Context','flowchart LR');self.assert_rule('diagrams')
+    def test_book(self):
+        write(self.root/'.axelerant/book.yml','how-to: ["nope.md"]\n')
+        self.assert_rule('book')
+    def test_book_rejects_unknown_section(self):
+        write(self.root/'.axelerant/book.yml','bogus: ["run-locally.md"]\n')
+        self.assert_rule('book')
+    def test_book_spine_accepts_real_pages(self):
+        write(self.root/'.axelerant/book.yml','how-to: ["deploy.md", "run-locally.md"]\n')
+        self.assertEqual([f for f in self.audit() if f['rule']=='book'],[])
     def test_duplicate_adr_number(self):
         src=self.root/'docs/adr/0003-executable-local-example.md'
         shutil.copyfile(src,self.root/'docs/adr/0003-duplicate.md')

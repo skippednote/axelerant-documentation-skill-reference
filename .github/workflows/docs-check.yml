@@ -134,6 +134,18 @@ jobs:
           MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
           PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer
         run: python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py "$SUBJECT" --render
+      - name: Assemble the book
+        id: book
+        if: steps.browser.outcome == 'success'
+        continue-on-error: true
+        env:
+          SUBJECT: ${{ steps.scope.outputs.root }}
+          MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
+          PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer
+        run: |
+          python3 -m pip install --quiet -r .docs-standard/requirements-ci.txt
+          python3 .docs-standard/scripts/build_book.py "$SUBJECT" \
+            --output "${{ runner.temp }}/book"
       - name: Install pinned link checker
         id: linktool
         continue-on-error: true
@@ -158,11 +170,12 @@ jobs:
           DEPENDENCIES: ${{ steps.dependencies.outcome }}
           BROWSER: ${{ steps.browser.outcome }}
           DIAGRAMS: ${{ steps.diagrams.outcome }}
+          BOOK: ${{ steps.book.outcome }}
           LINKS: ${{ steps.links.outcome }}
         run: |
           python3 - <<'PY'
           import os
-          names=('CONTRACT','MARKDOWN','VALE','INSTALL','DEPENDENCIES','BROWSER','DIAGRAMS','LINKS')
+          names=('CONTRACT','MARKDOWN','VALE','INSTALL','DEPENDENCIES','BROWSER','DIAGRAMS','BOOK','LINKS')
           bad=[n for n in names if os.environ.get(n)!='success']
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
               f.write('| Check | Outcome |\n|---|---|\n')

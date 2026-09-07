@@ -12,7 +12,7 @@ if manifest.get('name')!=name or not re.fullmatch(r'\d+\.\d+\.\d+(?:-[A-Za-z0-9.
 for key in ('commands','skills'):
     value=manifest.get(key)
     if not isinstance(value,str) or not value.startswith('./') or not (ROOT/value).is_dir(): errors.append(f'invalid {key} path')
-expected={'docs-init.md','docs-check.md','docs-verify.md'}
+expected={'docs-init.md','docs-check.md','docs-verify.md','docs-book.md'}
 files=list((ROOT/'commands').glob('*.md'))
 if {f.name for f in files}!=expected:errors.append('unexpected command set')
 for path in files:
@@ -26,4 +26,4 @@ for path in ROOT.rglob('CLAUDE.md'):
     if any(p in {'node_modules','.git','.venv'} for p in path.parts):continue
     if path.read_text().strip()!='@AGENTS.md' or not (path.parent/'AGENTS.md').is_file():errors.append(f'invalid Claude import {path}')
 if errors:raise SystemExit('\n'.join(errors))
-print('Plugin structure, skill dependencies, three command delegates and all Claude imports: OK. Official plugin execution is a separate release check.')
+print('Plugin structure, skill dependencies, four command delegates and all Claude imports: OK. Official plugin execution is a separate release check.')
