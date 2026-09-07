@@ -145,7 +145,7 @@ jobs:
         run: |
           python3 -m pip install --quiet -r .docs-standard/requirements-ci.txt
           python3 .docs-standard/scripts/build_book.py "$SUBJECT" \
-            --output "${{ runner.temp }}/book"
+            --if-applicable --output "${{ runner.temp }}/book"
       - name: Install pinned link checker
         id: linktool
         continue-on-error: true

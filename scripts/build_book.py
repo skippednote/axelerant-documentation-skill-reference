@@ -241,7 +241,8 @@ a{color:var(--accent)}
 """
 
 
-def build(root: Path, out_dir: Path, title: str | None, want_pdf: bool) -> Path:
+def build(root: Path, out_dir: Path, title: str | None, want_pdf: bool,
+          if_applicable: bool = False) -> Path | None:
     cfg_path = root / '.axelerant/repo.yml'
     if not cfg_path.is_file():
         die(f'{cfg_path} not found; a book is built from a declared repository')
@@ -252,7 +253,12 @@ def build(root: Path, out_dir: Path, title: str | None, want_pdf: bool) -> Path:
 
     chapters = spine(root, cfg)
     if not chapters:
-        die('no docs/ tree to publish; Component repositories have a README, not a book')
+        message = 'no docs/ tree to publish; Component repositories have a README, not a book'
+        if if_applicable:
+            # A sweep across every repository should skip these, not fail on them.
+            print(f'build_book: skipped, {message}')
+            return None
+        die(message)
 
     binary = os.getenv('MMDC_BIN') or shutil.which('mmdc')
     if binary is None:
@@ -355,9 +361,11 @@ def main() -> int:
     p.add_argument('--output', type=Path, default=None)
     p.add_argument('--title')
     p.add_argument('--pdf', action='store_true')
+    p.add_argument('--if-applicable', action='store_true',
+                   help='exit quietly when the tier has no book, for sweeps and CI')
     a = p.parse_args()
     root = a.root.resolve()
-    build(root, (a.output or root / 'dist').resolve(), a.title, a.pdf)
+    build(root, (a.output or root / 'dist').resolve(), a.title, a.pdf, a.if_applicable)
     return 0
 
 
