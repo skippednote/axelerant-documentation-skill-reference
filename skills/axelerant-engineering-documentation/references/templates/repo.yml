@@ -1,6 +1,0 @@
-tier: 1
-kind: site
-owner: "@org/team"
-visibility: internal
-on_call: false
-docs_review_days: 90

@@ -1,5 +1,6 @@
-# This nested file is an example for an extracted sample repository.
-# The parent repository's active workflow separately checks this sample's docs.
+# This nested file is an example for an extracted sample repository. It runs
+# nothing here: only workflows at a repository's own root are active, so this is
+# a file to copy, not a check on this repository.
 name: example-tests
 on:
   push:
