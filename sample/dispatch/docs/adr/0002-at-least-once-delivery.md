@@ -2,10 +2,12 @@
 title: Deliver at least once
 type: adr
 owner: "@axelerant/platform-team"
-status: accepted
+status: superseded by 0003
 date: 2026-03-18
 deciders: ["@axelerant/platform-team"]
 ---
+
+> Historical cloud-design specimen. Superseded for the executable example by [0003](0003-executable-local-example.md). Provider-specific statements below are preserved as historical reasoning, not independently re-verified claims.
 
 ## Context and problem statement
 
@@ -28,13 +30,16 @@ Exactly-once is not available: neither SES nor Twilio exposes an idempotency key
 ## Consequences
 
 **Good**
+
 - The guarantee is true, so producers can design against it.
 - No dedupe state to operate, size or debug.
 - A failure mode we cannot prevent is documented rather than hidden behind machinery that mostly works.
 
 **Bad**
+
 - Every producer carries the tolerance requirement, and new producers have to learn it.
 - Duplicate rate is a number we watch rather than a number we control.
 
 **Forecloses**
+
 - Marketing-style bulk sends where a duplicate is a brand problem. Those need a different service, or a dedupe layer added deliberately with this ADR superseded.

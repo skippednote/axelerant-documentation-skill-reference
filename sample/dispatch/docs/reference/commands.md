@@ -2,52 +2,20 @@
 title: Command reference
 type: reference
 owner: "@axelerant/platform-team"
-last_verified: 2026-09-01
+last_verified: 2026-09-03
+verification_method: source-review
 ---
 
 # Command reference
 
-Everything the Makefile exposes. `make help` prints the same list.
-
-## Stack
-
-| Command | Does |
+| Command | Behavior |
 |---|---|
-| `make up` | Starts postgres, redis, localstack |
-| `make down` | Stops the stack and removes volumes |
-| `make logs` | Tails all compose services |
+| python3 -m dispatch init | Create schema without resetting active work |
+| python3 -m dispatch api | Start local HTTP API |
+| python3 -m dispatch worker | Poll ready work continuously |
+| python3 -m dispatch worker-once | Attempt one ready item |
+| python3 -m dispatch send | Enqueue an example email |
+| python3 -m dispatch status | Count rows by state |
+| python3 -m dispatch get ID | Read one message |
 
-## Run
-
-| Command | Does |
-|---|---|
-| `make run` | API and dispatcher in one process |
-| `make run-api` | API only |
-| `make worker` | Dispatcher only |
-
-## Database
-
-| Command | Does |
-|---|---|
-| `make migrate` | Applies pending migrations |
-| `make migrate-down` | Reverts the last migration; local only |
-| `make migrate-new name=x` | Creates an up/down pair |
-| `make psql` | Opens psql against the local database |
-| `make psql-prod` | Port-forwards through the bastion, read-only role |
-
-## Quality
-
-| Command | Does |
-|---|---|
-| `make test` | Unit tests |
-| `make test-integration` | Integration tests; requires `make up` |
-| `make lint` | golangci-lint and gofumpt |
-| `make openapi` | Regenerates `reference/api.md` from `api/openapi.yaml` |
-
-## Operational
-
-| Command | Does |
-|---|---|
-| `make dlq-peek` | Prints the first 10 messages on the DLQ without consuming |
-| `make dlq-redrive n=50` | Moves up to 50 messages from the DLQ back to the main queue |
-| `make queue-depth` | Prints approximate depth for both queues |
+The Makefile sets `PYTHONPATH=src`. Direct CLI calls need that environment setting. A recipient beginning with `fail:` triggers deterministic provider rejection for exercises.

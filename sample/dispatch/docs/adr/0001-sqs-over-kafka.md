@@ -2,10 +2,12 @@
 title: Use SQS for the outbound queue
 type: adr
 owner: "@axelerant/platform-team"
-status: accepted
+status: superseded by 0003
 date: 2026-03-11
 deciders: ["@axelerant/platform-team"]
 ---
+
+> Historical cloud-design specimen. Superseded for the executable example by [0003](0003-executable-local-example.md). The original reasoning below is retained; it does not describe the current local runtime.
 
 ## Context and problem statement
 
@@ -28,14 +30,17 @@ The deciding factor was poison-message handling. A single undeliverable message 
 ## Consequences
 
 **Good**
+
 - Redelivery, visibility timeout and DLQ are configuration, not code.
 - A stuck message affects one message.
 - Depth is a first-class metric, so the alert and its runbook are straightforward.
 
 **Bad**
+
 - A second queue technology to operate and reason about.
 - No ordering. Two messages to the same recipient can arrive out of order, and nothing in the design prevents it.
 - LocalStack does not enforce visibility timeout faithfully, so timeout-related bugs do not reproduce locally.
 
 **Forecloses**
+
 - Replaying the outbound stream for analytics. If we want that later it needs a separate event emitted alongside the send, not a queue replay.

@@ -2,60 +2,39 @@
 title: Run dispatch locally
 type: how-to
 owner: "@axelerant/platform-team"
-last_verified: 2026-09-01
+last_verified: 2026-09-03
+verification_method: automated-test
 ---
 
 # Run dispatch locally
 
-## Before you start
-
-- Go 1.23 (`go version`)
-- Docker Compose 2.29 (`docker compose version`)
-- `awslocal` for talking to LocalStack: `pipx install awscli-local`
-
-No AWS credentials are needed. The compose stack runs LocalStack in place of SQS and SES.
-
-## Steps
+## Start
 
 ```bash
-cp .env.example .env
-make up            # postgres:16, redis:7, localstack:3
-make migrate
+make up
 make run
 ```
 
-`make run` starts the API and the dispatcher in one process, which is the usual local setup. To reproduce a queue problem, run them apart:
+The API binds to http://127.0.0.1:8080. Run `make worker` in another terminal for continuous delivery. Use Ctrl-C to stop either process.
+
+## Exercise a request
 
 ```bash
-make run-api       # :8080, accepts and enqueues only
-make worker        # claims from SQS, delivers
+make send
+make worker-once
+make status
 ```
 
-## Check it works
-
-```bash
-curl -s localhost:8080/healthz
-# {"status":"ok","db":"ok","queue":"ok"}
-```
-
-If `queue` is `degraded`, LocalStack has not finished creating `dispatch-outbound`. Wait five seconds and retry.
+The sent count rises by one. `make smoke` runs an isolated version with an ephemeral HTTP port and no shared state.
 
 ## Reset
 
+Stop the API and worker first, then run:
+
 ```bash
-make down          # removes volumes; next make up is a clean database
+make clean
+make up
 ```
 
-## When it goes wrong
-
-| Symptom | Cause | Fix |
-|---|---|---|
-| `dial tcp :5432: connect: connection refused` | Postgres has not finished starting | Wait, then `make migrate` |
-| `make test-integration` passes instantly | Stack is down, so every test skipped | `make up`, then check the test count |
-| Messages stay `queued` | Only the API is running | Start `make worker` |
-| `NoSuchQueue` | LocalStack was reset without recreating the queue | `make down && make up` |
-
-## Related
-
-- [Configuration keys](../reference/configuration.md)
-- [Deliver your first notification](../tutorials/first-notification.md)
+Reset discards example messages and receipts. It is never a production recovery step.
+The variable `DISPATCH_STATE` is read from the process environment; copying `.env.example` does not load it automatically.

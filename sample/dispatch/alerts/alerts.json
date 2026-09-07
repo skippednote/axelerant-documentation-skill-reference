@@ -1,0 +1,12 @@
+[
+  {
+    "name": "DispatchQueueDepthCritical",
+    "runbook": "docs/runbooks/dispatch-queue-depth-critical.md",
+    "condition": "queued > 50"
+  },
+  {
+    "name": "ProviderErrorRateHigh",
+    "runbook": "docs/runbooks/provider-error-rate-high.md",
+    "condition": "failed / (sent + failed) > 0.05 and sent + failed >= 20"
+  }
+]

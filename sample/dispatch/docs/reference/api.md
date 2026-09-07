@@ -2,58 +2,21 @@
 title: HTTP API
 type: reference
 owner: "@axelerant/platform-team"
-last_verified: 2026-09-01
+last_verified: 2026-09-03
+verification_method: source-review
 ---
 
 # HTTP API
 
-Generated from `api/openapi.yaml` by `make openapi`. Do not edit by hand; the next generation will
-overwrite it. Change the spec.
+Source: `src/dispatch/app.py`.
 
-Base URL: `https://dispatch.internal`. All requests carry `Authorization: Bearer <service-token>`,
-scoped to one sender key.
-
-## POST /v1/messages
-
-Accepts a message and queues it. Returns before delivery is attempted.
-
-| Field | Type | Required | Notes |
-|---|---|---|---|
-| `sender_key` | string | yes | Must match a sender the token is scoped to |
-| `channel` | enum | yes | `email`, `sms`, `push` |
-| `to` | string | yes | Address or number, validated per channel |
-| `subject` | string | email only | Rejected for `sms` |
-| `body` | string | yes | Rendered by the producer, not by dispatch |
-| `idempotency_key` | string | no | Deduplicates retries of this call, not deliveries |
-
-| Status | Meaning |
-|---|---|
-| 202 | Queued. Body carries `id` and `status: queued` |
-| 400 | Validation failed. Body names the field |
-| 403 | Token is not scoped to `sender_key` |
-| 422 | Recipient is on the suppression list |
-| 503 | Suppression list unreachable; retry |
-
-## GET /v1/messages/{id}
-
-Returns the current row, including `status`, `attempts` and `last_error`.
-
-| Status | Meaning |
-|---|---|
-| 200 | Found |
-| 404 | Unknown id, or the body has passed its 30-day retention |
-
-## POST /v1/senders
-
-Creates a sender. Restricted to platform tokens.
-
-| Field | Type | Required |
+| Method | Route | Result |
 |---|---|---|
-| `key` | string | yes |
-| `from` | string | yes |
-| `rate_per_minute` | int | yes |
+| GET | /healthz | 200 after a database read; 503 on a database error |
+| GET | /metrics | JSON counts for queued, processing, sent and failed |
+| POST | /v1/messages | 202 with id and queued status |
+| GET | /v1/messages/{id} | Message record, or 404 |
 
-## GET /healthz
+A create request is a JSON object with string fields `channel`, `recipient`, and `body`. Channel is email, sms or push; recipient and body are nonempty. Bodies are capped at 65,536 bytes. Invalid input returns 400.
 
-No authentication. Returns `{"status","db","queue"}`. `queue: degraded` means the queue is
-unreachable; the API keeps accepting and the backlog grows.
+No authentication is implemented; loopback binding is mandatory. A 202 response confirms persistence, not delivery.

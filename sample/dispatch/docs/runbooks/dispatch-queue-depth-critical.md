@@ -2,60 +2,41 @@
 title: DispatchQueueDepthCritical
 type: runbook
 owner: "@axelerant/platform-team"
-last_verified: 2026-09-01
+last_verified: 2026-09-03
+verification_method: staging-drill
+alert: DispatchQueueDepthCritical
+alert_source: alerts/alerts.json
 ---
 
 # DispatchQueueDepthCritical
 
 ## Trigger
 
-`DispatchQueueDepthCritical` — `aws_sqs_approximate_number_of_messages_visible{queue="dispatch-outbound"} > 5000` for 10 minutes.
+`DispatchQueueDepthCritical`: `queued > 50`. Evaluated by the local exercise script; no real pager is configured.
 
 ## Impact
 
-Notifications are accepted but not delivered. At 5,000 the backlog is roughly 20 minutes of normal traffic. Password resets and one-time codes are in the same queue as everything else, so user-visible failures start before the backlog is obvious to producers. Severity 2; severity 1 if depth is still climbing after mitigation.
+Queue depth is over the local exercise threshold. Accepted notifications wait for a worker. This is a simulation, not a production severity assignment.
 
 ## Diagnose
 
-1. Is the dispatcher running?
-   `kubectl -n dispatch get pods -l app=dispatch-worker`
-   Good: all pods `Running`, restart count stable. A crash loop points at configuration; check the pod events.
-
-2. Is it processing anything?
-   `kubectl -n dispatch logs -l app=dispatch-worker --since=5m | grep -c 'dispatcher sent'`
-   Good: a non-zero count that grows between runs. Zero with healthy pods means it is claiming and failing.
-
-3. Is one provider failing?
-   Open the per-provider error rate panel on the dispatch dashboard.
-   Good: error rate under 1% for each provider. A single provider at 100% is the common cause.
-
-4. Is the DLQ filling?
-   `make dlq-peek`
-   Good: empty or near-empty. A filling DLQ means messages are being classified permanent and dropped, which is a different problem from a stall.
-
-5. Is the suppression API up?
-   `curl -s -o /dev/null -w '%{http_code}' "$SUPPRESSION_API_URL/healthz"`
-   Good: 200. Non-200 fails every attempt, because an unavailable suppression list is treated as everything suppressed.
+1. Run `make status`. Healthy: queued and failed counts are zero after a normal completed example.
+2. Run `make worker-once`. Healthy: ready work advances; `False` means no item is ready yet.
+3. Check recipients for the deliberately failing `fail:` prefix. Healthy examples do not use it.
+4. Run `make test`. Healthy: lease, retry and delivery tests pass independently of local state.
 
 ## Mitigate
 
-1. **Safe: scale the dispatcher.**
-   `kubectl -n dispatch scale deployment/dispatch-worker --replicas=8`
-   Works when the cause is volume rather than failure. Watch depth for five minutes before doing anything else.
+**Safe:** start `make worker` for queued work. Wait for retry availability rather than repeatedly resetting state.
 
-2. **Safe: disable the failing provider's channel.**
-   `kubectl -n dispatch set env deployment/dispatch-worker CHANNEL_EMAIL_ENABLED=false`
-   Messages for that channel stay queued rather than burning attempts. Re-enable when the provider recovers.
+**Safe:** after a deliberate failure exercise, submit a new normal message and confirm a receipt.
 
-3. **Risky: raise `RETRY_MAX_ATTEMPTS`.**
-   Only when a provider is recovering and messages are approaching the redrive count. Raising it above the queue's redrive count means messages hit the DLQ before the application stops retrying, so check the queue configuration first.
+**Risky:** `make clean` discards messages and evidence. Stop running processes and use it only for disposable local data.
 
 ## Escalate
 
-- `@axelerant/platform-team` in `#platform-dispatch`.
-- Escalate when depth is still climbing 15 minutes after scaling, or when the cause is a vendor outage — then it needs the vendor's status page and an incident channel, not more workers.
+Stop changing state if normal messages cannot be delivered or tests fail. Open a repository issue for `@axelerant/platform-team`, removing recipient and body values. This public example uses no internal contact details.
 
 ## After
 
-- Record peak depth, cause and time to recover in the incident ticket.
-- If a diagnose step was missing or wrong, fix this file before closing the incident.
+Record the failing test or command, count values and corrective change in the issue. Correct this runbook before closing the issue. Its verification date refers to an isolated local response exercise, not a production incident.

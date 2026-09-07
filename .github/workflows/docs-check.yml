@@ -1,136 +1,163 @@
 name: docs-check
-
 on:
   workflow_call:
     inputs:
       path:
-        description: Directory to audit, relative to the caller's repo root.
         type: string
-        default: "."
+        default: .
+      ref:
+        description: Reviewed reference-repository full commit SHA
+        type: string
+        required: true
+      enforcement:
+        description: warn or block; empty uses the legacy strict flag
+        type: string
+        default: ''
       strict:
-        description: Fail the job on blocking findings. Set false during a warn-only rollout.
+        description: Backward compatible; false selects warn when enforcement is empty
         type: boolean
         default: true
-      ref:
-        description: Ref of the reference repo to pin the contract to.
-        type: string
-        default: "v1"
-      skip_vale:
-        type: boolean
-        default: false
-      skip_links:
-        type: boolean
-        default: false
-      skip_mermaid:
-        description: Skip the diagram render pass. It needs a headless browser.
-        type: boolean
-        default: false
-      link_exclude_paths:
-        description: >-
-          Space-separated paths the link checker skips. Use it for directories of
-          file templates, whose relative links only resolve once instantiated.
-        type: string
-        default: ""
-
+permissions:
+  contents: read
 jobs:
-  contract:
-    name: Contract, frontmatter, placeholders, budgets
+  checks:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo under audit
-        uses: actions/checkout@v7
-
-      - name: Check out the contract
-        uses: actions/checkout@v7
-        with:
-          repository: skippednote/axelerant-documentation-skill-reference
-          ref: ${{ inputs.ref }}
-          path: .docs-standard
-
-      - name: Audit
-        run: |
-          python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/docs_audit.py \
-            "${{ inputs.path }}" ${{ inputs.strict && '--strict' || '' }}
-
-  markdownlint:
-    name: markdownlint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/checkout@v7
-        with:
-          repository: skippednote/axelerant-documentation-skill-reference
-          ref: ${{ inputs.ref }}
-          path: .docs-standard
-      - name: Use the shared config when the repo has none
-        run: |
-          [ -f .markdownlint-cli2.jsonc ] || \
-            cp .docs-standard/.markdownlint-cli2.jsonc .
-      - uses: DavidAnson/markdownlint-cli2-action@v24
-        with:
-          globs: "**/*.md #.docs-standard"
-
-  vale:
-    name: Vale
-    runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_vale }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/checkout@v7
-        with:
-          repository: skippednote/axelerant-documentation-skill-reference
-          ref: ${{ inputs.ref }}
-          path: .docs-standard
-      - name: Use the shared style when the repo has none
-        run: |
-          if [ ! -f .vale.ini ]; then
-            cp .docs-standard/.vale.ini .
-            mkdir -p styles && cp -R .docs-standard/styles/Axelerant styles/
-          fi
-      - uses: errata-ai/vale-action@v3
-        with:
-          reporter: github-pr-check
-          fail_on_error: true
-          filter_mode: nofilter
-
-  links:
-    name: Link check
-    runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_links }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: lycheeverse/lychee-action@v2.9.0
-        with:
-          args: >-
-            --no-progress --accept 200,206,429
-            --exclude-path .docs-standard
-            ${{ inputs.link_exclude_paths && format('--exclude-path {0}', inputs.link_exclude_paths) || '' }}
-            --exclude '^https?://(localhost|.*\.internal|.*\.test)'
-            "**/*.md"
-          fail: true
-
-  mermaid:
-    name: Diagrams render
-    runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_mermaid }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/checkout@v7
-        with:
-          repository: skippednote/axelerant-documentation-skill-reference
-          ref: ${{ inputs.ref }}
-          path: .docs-standard
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-      - name: Install the pinned renderer from the lockfile
-        working-directory: .docs-standard
-        run: |
-          npm ci
-          npx puppeteer browsers install chrome
-      - name: Render every Mermaid block
+      - name: Validate invocation
+        id: mode
         env:
-          MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
+          CONTRACT_REF: ${{ inputs.ref }}
+          MODE: ${{ inputs.enforcement }}
+          STRICT: ${{ inputs.strict }}
         run: |
-          python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py \
-            "${{ inputs.path }}" --render
+          python3 - <<'PY'
+          import os,re
+          if not re.fullmatch('[0-9a-f]{40}',os.environ['CONTRACT_REF']):
+              raise SystemExit('ref must be a full reviewed commit SHA')
+          mode=os.environ['MODE'] or ('block' if os.environ['STRICT']=='true' else 'warn')
+          if mode not in ('warn','block'): raise SystemExit('enforcement must be warn or block')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('mode='+mode+'\n')
+          PY
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: subject
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: skippednote/axelerant-documentation-skill-reference
+          ref: ${{ inputs.ref }}
+          path: .docs-standard
+          persist-credentials: false
+      - name: Resolve scoped checkout
+        id: scope
+        env:
+          DOCS_PATH: ${{ inputs.path }}
+        run: |
+          python3 - <<'PY'
+          import os,pathlib
+          root=pathlib.Path('subject').resolve()
+          if any(c in os.environ['DOCS_PATH'] for c in '\r\n'): raise SystemExit('invalid newline in path')
+          target=(root/os.environ['DOCS_PATH']).resolve()
+          if not target.is_relative_to(root) or not target.is_dir(): raise SystemExit('invalid repository-relative path')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('root='+str(target)+'\n')
+          PY
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.14.7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.20.0
+      - name: Contract and local links
+        id: contract
+        continue-on-error: true
+        env:
+          SUBJECT: ${{ steps.scope.outputs.root }}
+        run: python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/docs_audit.py "$SUBJECT" --strict
+      - name: Prepare scoped lint inputs
+        env:
+          SUBJECT: ${{ steps.scope.outputs.root }}
+        run: python3 .docs-standard/scripts/prepare_check_inputs.py "$SUBJECT" .lint-inputs
+      - name: Shared Markdown rules
+        id: markdown
+        continue-on-error: true
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+        with:
+          config: .docs-standard/.markdownlint-cli2.jsonc
+          globs: .lint-inputs/markdown/**/*.md
+      - name: Shared prose rules
+        id: vale
+        continue-on-error: true
+        uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # v3.0.0
+        with:
+          version: 3.20.0
+          workdir: .lint-inputs/prose
+          config: ${{ github.workspace }}/.docs-standard/.vale.ini
+          files: all
+          glob: '**/*.md'
+          reporter: github-pr-annotations
+          filter_mode: nofilter
+          fail_level: error
+          sync: false
+      - name: Install reviewed renderer from lockfile
+        id: install
+        continue-on-error: true
+        working-directory: .docs-standard
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+        run: npm ci --ignore-scripts --no-fund
+      - name: Audit renderer dependencies
+        id: dependencies
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        working-directory: .docs-standard
+        run: npm audit --audit-level=high
+      - name: Install matched browser
+        id: browser
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        working-directory: .docs-standard
+        run: ./node_modules/.bin/puppeteer browsers install chrome
+      - name: Render scoped diagrams
+        id: diagrams
+        if: steps.browser.outcome == 'success'
+        continue-on-error: true
+        env:
+          SUBJECT: ${{ steps.scope.outputs.root }}
+          MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
+        run: python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py "$SUBJECT" --render
+      - name: Install pinned link checker
+        id: linktool
+        continue-on-error: true
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: --version
+          fail: true
+      - name: Check external links with scoped exemptions
+        id: links
+        if: steps.linktool.outcome == 'success'
+        continue-on-error: true
+        run: python3 .docs-standard/scripts/check_external_links.py .lint-inputs/external-files.json
+      - name: Apply enforcement to all results
+        if: always()
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          CONTRACT: ${{ steps.contract.outcome }}
+          MARKDOWN: ${{ steps.markdown.outcome }}
+          VALE: ${{ steps.vale.outcome }}
+          INSTALL: ${{ steps.install.outcome }}
+          DEPENDENCIES: ${{ steps.dependencies.outcome }}
+          BROWSER: ${{ steps.browser.outcome }}
+          DIAGRAMS: ${{ steps.diagrams.outcome }}
+          LINKS: ${{ steps.links.outcome }}
+        run: |
+          python3 - <<'PY'
+          import os
+          names=('CONTRACT','MARKDOWN','VALE','INSTALL','DEPENDENCIES','BROWSER','DIAGRAMS','LINKS')
+          bad=[n for n in names if os.environ.get(n)!='success']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('| Check | Outcome |\n|---|---|\n')
+              for n in names: f.write(f"| {n} | {os.environ.get(n,'not run')} |\n")
+          if bad: print('::warning::Incomplete or failed checks: '+', '.join(bad))
+          raise SystemExit(1 if os.environ.get('MODE')!='warn' and bad else 0)
+          PY

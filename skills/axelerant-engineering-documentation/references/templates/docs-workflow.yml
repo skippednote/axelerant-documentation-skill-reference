@@ -1,36 +1,37 @@
 # .github/workflows/docs.yml — the whole enforcement setup for a repository.
-# Copy this file in. Nothing else is vendored; the contract, both scripts, the
-# Vale style and the markdownlint config are read from the pinned ref.
 #
-# Both `uses` entries and `ref` name the same full commit SHA. A tag can be
-# moved, and whoever moves it changes code that runs in every adopting
-# repository, one of which holds `pull-requests: write`.
-# Bump all three together when you adopt a new version of the standard.
+# Copy this file in as it stands. Every reference below is one immutable commit
+# of the standard, so nothing is vendored into the adopting repository and
+# nothing follows a movable tag.
+#
+# To adopt a different reviewed commit, or to generate this file from
+# automation, run instead:
+#
+#   python3 scripts/render_workflow.py FULL_REVIEWED_COMMIT --output .github/workflows/docs.yml
+#
+# Use enforcement: warn while a repository is completing its required set, and
+# block in the pull request that finishes adoption.
 name: docs
-
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
-
+permissions:
+  contents: read
 jobs:
   docs:
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@6e70f4277373c1d9177ba1b6ba47b2e3c9786725
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@PINNED_RELEASE_COMMIT
     with:
-      path: "."
-      strict: true      # false while a repository is still being brought up
-      ref: 6e70f4277373c1d9177ba1b6ba47b2e3c9786725
-      # Directories of file templates, whose relative links resolve only once
-      # the template is instantiated. Omit if the repository has none.
-      # link_exclude_paths: path/to/templates
-
+      ref: PINNED_RELEASE_COMMIT
+      path: .
+      enforcement: block
   coupling:
     if: github.event_name == 'pull_request'
-    # Required. A called workflow cannot hold more permission than the caller
-    # grants it, and without this the whole file is rejected at startup.
+    # A called workflow cannot hold more permission than its caller grants,
+    # and without this the whole file is rejected before any job starts.
     permissions:
       contents: read
       pull-requests: write
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@6e70f4277373c1d9177ba1b6ba47b2e3c9786725
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@PINNED_RELEASE_COMMIT
     with:
-      ref: 6e70f4277373c1d9177ba1b6ba47b2e3c9786725
+      ref: PINNED_RELEASE_COMMIT

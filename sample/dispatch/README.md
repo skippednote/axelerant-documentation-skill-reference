@@ -1,63 +1,66 @@
 # dispatch
 
-Outbound notification service: takes a message from any internal service and delivers it by email, SMS or push.
+Local notification-service example for engineers adopting the Axelerant documentation standard.
 
 ## Status
 
-`active` · production `https://dispatch.internal` · staging `https://dispatch.stg.internal`
+`poc` — local simulation only. No real notifications, customers, paging service or production deployment.
 
 ## Requirements
 
-- Go 1.23
-- PostgreSQL 16
-- Redis 7
-- Docker Compose 2.29 (local only)
-- AWS credentials with `sqs:ReceiveMessage` on `dispatch-outbound` (local development uses LocalStack instead)
+Python 3.14.7 is the target CI runtime. Python 3.12 or newer is supported; the preparation tests ran on 3.13.5.
+GNU Make is a command convenience; there are no third-party runtime packages. The API binds only to loopback.
 
 ## Quick start
 
+From `sample/dispatch` in this repository:
+
 ```bash
-git clone git@github.com:axelerant/dispatch.git
-cd dispatch
-cp .env.example .env          # defaults point at the compose stack
-make up                       # postgres, redis, localstack
-make migrate
-make run                      # serves on :8080
-curl -s localhost:8080/healthz
+make up
+make send
+make worker-once
+make status
+make smoke
 ```
 
-`make up` takes about 40 seconds on first run while it pulls images.
+The status includes one `sent` message. A receipt is written to `.state/outbox.jsonl`.
+For interactive HTTP, run `make run` and start `make worker` in another terminal.
 
 ## Common commands
 
 | Command | Does |
 |---|---|
-| `make up` | Starts postgres, redis and localstack via Docker Compose |
-| `make down` | Stops the stack and removes volumes |
-| `make run` | Runs the API and the dispatcher in one process |
-| `make worker` | Runs only the dispatcher, against the same database |
-| `make migrate` | Applies pending migrations |
-| `make migrate-new name=add_channel` | Creates an empty migration pair |
-| `make test` | Unit tests |
-| `make test-integration` | Integration tests; needs `make up` first |
-| `make lint` | golangci-lint and gofumpt |
-| `make openapi` | Regenerates `docs/reference/api.md` from `api/openapi.yaml` |
+| `make up` | Creates the SQLite schema without changing existing claims |
+| `make run` | Runs the API at http://127.0.0.1:8080 |
+| `make worker` | Polls the queue until interrupted |
+| `make worker-once` | Processes at most one ready message |
+| `make send` | Enqueues a local example email |
+| `make status` | Reports counts by delivery state |
+| `make test` | Runs behavior and concurrency tests |
+| `make smoke` | Tests the complete HTTP-to-receipt flow |
+| `make docs-check` | Runs the documentation audit |
+| `make verify` | Runs syntax, behavior and documentation checks |
+| `make package` | Writes a source archive under dist/ |
+| `make clean` | Deletes only generated state and archives |
 
 ## How we work here
 
-Branch from `main` as `<ticket>-<short-slug>`. Commits are prefixed with the ticket key. Every PR needs one review and a green `docs-check`. Squash on merge.
+Change behavior, tests and documentation together. Preserve historical ADRs. New queue or provider guarantees need a new decision record.
 
 ## Ownership
 
-- Team: `@axelerant/platform-team`
-- Slack: `#platform-dispatch`
-- Escalation: platform on-call rota, then the engineering manager for platform
+Team: `@axelerant/platform-team`. Support and escalation: repository issues, assigned to the owning team.
+All example operational information is fictional and public-safe.
 
 ## Documentation
 
-- [Documentation index](docs/README.md) — where everything is
-- [Run it locally](docs/how-to/run-locally.md) — how do I get a working copy?
-- [Deploy and roll back](docs/how-to/deploy.md) — how does a change reach production?
-- [Architecture](docs/explanation/architecture.md) — why is it split into API and dispatcher?
-- [Delivery semantics](docs/explanation/delivery-semantics.md) — why can a recipient get two copies?
-- [Runbooks](docs/runbooks/) — an alert fired, what now?
+- [Documentation map](docs/README.md) — where do I begin?
+- [First notification](docs/tutorials/first-notification.md) — what happens after acceptance?
+- [Run locally](docs/how-to/run-locally.md) — how do I start the API and worker?
+- [Architecture](docs/explanation/architecture.md) — why separate delivery?
+- [API reference](docs/reference/api.md) — which routes exist?
+- [Alert response](docs/runbooks/README.md) — how do the local response exercises work?
+
+## Distribution
+
+Included in the reference repository. `make package` creates a local source ZIP, not a production deployment.

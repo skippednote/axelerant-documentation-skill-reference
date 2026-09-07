@@ -1,9 +1,12 @@
 {
   "name": "axelerant-engineering-documentation",
-  "version": "0.1.0",
-  "description": "Sets up and maintains repository documentation to the Axelerant Engineering Documentation Standard — tiered README and docs/ contract, MADR ADRs, alert-named runbooks, C4 diagrams, and an audit that blocks generated filler. Handles brownfield and greenfield repos.",
-  "author": { "name": "Axelerant" },
+  "version": "1.0.0-rc.1",
+  "description": "Scaffold, migrate and audit repository documentation using Axelerant tiers and evidence-based verification.",
+  "author": {
+    "name": "Axelerant"
+  },
   "license": "Apache-2.0",
-  "commands": ["./commands"],
-  "skills": ["./skills"]
+  "repository": "https://github.com/skippednote/axelerant-documentation-skill-reference",
+  "commands": "./commands/",
+  "skills": "./skills/"
 }

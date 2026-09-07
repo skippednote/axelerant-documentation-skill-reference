@@ -1,35 +1,25 @@
 ---
-title: <Decision, as a statement>
+title: Actual decision title
 type: adr
 owner: "@org/team"
-status: proposed        # proposed | accepted | superseded by NNNN | deprecated
-date: <YYYY-MM-DD>
-deciders: ["@owner", "@team"]
+status: proposed
+date: "DATE_OF_DECISION"
+deciders: ["@org/team"]
 ---
 
 ## Context and problem statement
 
-<What forced a decision, and the constraint that made it hard. Two paragraphs.>
+Record the actual constraint.
 
 ## Considered options
 
-- **<Option A>** — <why it was plausible>
-- **<Option B>** — <why it was plausible>
+- Plausible option one and why it was considered.
+- Plausible option two and why it was considered.
 
 ## Decision
 
-<What was chosen, in one sentence, and the deciding factor.>
+Record the choice and deciding factor.
 
 ## Consequences
 
-**Good**
-
-- <consequence>
-
-**Bad**
-
-- <consequence — this list is mandatory>
-
-**Forecloses**
-
-- <what is now harder or impossible>
+State benefits, costs and paths now foreclosed.
