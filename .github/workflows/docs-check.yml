@@ -122,7 +122,9 @@ jobs:
           # One explicit cache, so the render step resolves the same build the
           # installed puppeteer pinned rather than guessing a default path.
           PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer
-        run: ./node_modules/.bin/puppeteer browsers install chrome
+        # mermaid-cli launches chrome-headless-shell; chrome alone is not
+        # what it asks the launcher for.
+        run: ./node_modules/.bin/puppeteer browsers install chrome-headless-shell chrome
       - name: Render scoped diagrams
         id: diagrams
         if: steps.browser.outcome == 'success'
