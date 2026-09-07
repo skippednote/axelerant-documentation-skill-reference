@@ -1,10 +1,10 @@
 ---
 title: Deliver at least once
 type: adr
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 status: superseded by 0003
 date: 2026-03-18
-deciders: ["@axelerant/platform-team"]
+deciders: ["@axelerant/dispatch-admins"]
 ---
 
 > Historical cloud-design specimen. Superseded for the executable example by [0003](0003-executable-local-example.md). Provider-specific statements below are preserved as historical reasoning, not independently re-verified claims.

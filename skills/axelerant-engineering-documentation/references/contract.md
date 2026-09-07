@@ -20,7 +20,7 @@ Existing repositories can start with `enforcement: warn` while completing their 
 # .axelerant/repo.yml
 tier: 2
 kind: service                 # service | site | library | action | cli | poc | docs
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 visibility: internal          # public | internal | client-confidential
 on_call: true
 docs_review_days: 90
@@ -34,7 +34,9 @@ Metadata uses a deliberately small YAML subset: flat scalars and JSON-style list
 
 <!-- check: ownership -->
 
-The configured owner is a GitHub team handle. The effective last catch-all `*` rule in CODEOWNERS includes that handle, the README names it, and documentation frontmatter uses it. Review any narrower CODEOWNERS patterns separately: the checker does not resolve all GitHub ownership precedence rules.
+The configured owner is a GitHub team handle that already exists. Teams here are named after the repository, `<repo>-admins` and `<repo>-writers`; there is no central engineering or platform team to fall back on. GitHub ignores an owner it does not recognise, so a handle that looks plausible and does not exist leaves the path with no required reviewer and no error. Confirm the team resolves before you commit it.
+
+The effective last catch-all `*` rule in CODEOWNERS includes that handle, the README names it, and documentation frontmatter uses it. Review any narrower CODEOWNERS patterns separately: the checker does not resolve all GitHub ownership precedence rules, and it cannot tell whether a handle names a real team.
 
 Public documentation contains public-safe facts and fictional examples, not private hostnames, client identifiers, internal channels, real recipient data or access credentials. Internal and client-confidential repositories can contain operational detail appropriate to their access controls. Secrets never belong in documentation. A public support or issue route replaces an internal Slack channel. Classification correctness is a human review responsibility.
 
@@ -110,7 +112,7 @@ Every Markdown page under docs/ has a title, type and configured owner. Director
 ---
 title: Run locally
 type: how-to
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 last_verified: 2026-09-03
 verification_method: clean-checkout
 applies_to: "v2.4+"
@@ -144,10 +146,10 @@ Use `docs/adr/NNNN-kebab-title.md`. Component deviations use .axelerant/adr/ bec
 ---
 title: Choose the queue model
 type: adr
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 status: accepted
 date: 2026-09-03
-deciders: ["@axelerant/platform-team"]
+deciders: ["@axelerant/dispatch-admins"]
 ---
 ```
 

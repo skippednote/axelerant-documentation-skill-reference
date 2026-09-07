@@ -1,10 +1,10 @@
 ---
 title: Use SQS for the outbound queue
 type: adr
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 status: superseded by 0003
 date: 2026-03-11
-deciders: ["@axelerant/platform-team"]
+deciders: ["@axelerant/dispatch-admins"]
 ---
 
 > Historical cloud-design specimen. Superseded for the executable example by [0003](0003-executable-local-example.md). The original reasoning below is retained; it does not describe the current local runtime.

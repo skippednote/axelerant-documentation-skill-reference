@@ -1,7 +1,7 @@
 ---
 title: Security posture
 type: explanation
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 last_verified: 2026-09-03
 verification_method: source-review
 ---

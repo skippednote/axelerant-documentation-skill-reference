@@ -1,7 +1,7 @@
 ---
 title: DispatchQueueDepthCritical
 type: runbook
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 last_verified: 2026-09-03
 verification_method: staging-drill
 alert: DispatchQueueDepthCritical
@@ -35,7 +35,7 @@ Queue depth is over the local exercise threshold. Accepted notifications wait fo
 
 ## Escalate
 
-Stop changing state if normal messages cannot be delivered or tests fail. Open a repository issue for `@axelerant/platform-team`, removing recipient and body values. This public example uses no internal contact details.
+Stop changing state if normal messages cannot be delivered or tests fail. Open a repository issue for `@axelerant/dispatch-admins`, removing recipient and body values. This public example uses no internal contact details.
 
 ## After
 

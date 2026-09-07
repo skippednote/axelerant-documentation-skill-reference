@@ -1,10 +1,10 @@
 ---
 title: Make the worked example executable locally
 type: adr
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
 status: accepted
 date: 2026-09-03
-deciders: ["@axelerant/platform-team"]
+deciders: ["@axelerant/dispatch-admins"]
 ---
 
 ## Context and problem statement

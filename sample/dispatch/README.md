@@ -49,7 +49,7 @@ Change behavior, tests and documentation together. Preserve historical ADRs. New
 
 ## Ownership
 
-Team: `@axelerant/platform-team`. Support and escalation: repository issues, assigned to the owning team.
+Team: `@axelerant/dispatch-admins`. Support and escalation: repository issues, assigned to the owning team.
 All example operational information is fictional and public-safe.
 
 ## Documentation
