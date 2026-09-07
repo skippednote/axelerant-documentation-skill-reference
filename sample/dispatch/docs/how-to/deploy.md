@@ -16,6 +16,6 @@ make package
 
 The archive is `dist/dispatch.zip`. It includes the Makefile, source, tests and documentation. It excludes generated state and caches.
 
-Extract it into a fresh directory to run `make test`. `make docs-check` is run from the parent reference checkout because the checker is deliberately not duplicated inside this example.
+Extract it into a fresh directory to run `make test`. The documentation audit is not part of this example: it runs against the example from outside, so the checker is never duplicated inside it.
 
 Keep the previous archive for rollback; extract it separately rather than overlaying different source versions.
