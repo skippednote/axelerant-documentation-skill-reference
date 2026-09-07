@@ -18,7 +18,22 @@ if not re.fullmatch('[0-9a-f]{40}', a.commit):
     p.error('expected a full reviewed commit SHA, not a tag or short SHA')
 
 SOURCE = 'skippednote/axelerant-documentation-skill-reference'
-text = f'''name: docs
+# The committed template is this renderer's output for the release commit, and
+# a test compares the two. Anything written here has to be written there.
+text = f'''# .github/workflows/docs.yml — the whole enforcement setup for a repository.
+#
+# Copy this file in as it stands. Every reference below is one immutable commit
+# of the standard, so nothing is vendored into the adopting repository and
+# nothing follows a movable tag.
+#
+# To adopt a different reviewed commit, or to generate this file from
+# automation, run instead:
+#
+#   python3 scripts/render_workflow.py FULL_REVIEWED_COMMIT --output .github/workflows/docs.yml
+#
+# Use enforcement: warn while a repository is completing its required set, and
+# block in the pull request that finishes adoption.
+name: docs
 on:
   pull_request:
   push:
@@ -36,7 +51,8 @@ jobs:
 if not a.no_coupling:
     text += f'''  coupling:
     if: github.event_name == 'pull_request'
-    # A called workflow cannot hold more permission than its caller grants.
+    # A called workflow cannot hold more permission than its caller grants,
+    # and without this the whole file is rejected before any job starts.
     permissions:
       contents: read
       pull-requests: write
