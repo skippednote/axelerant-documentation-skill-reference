@@ -94,7 +94,9 @@ jobs:
           config: ${{ github.workspace }}/.docs-standard/.vale.ini
           files: all
           glob: '**/*.md'
-          reporter: github-pr-annotations
+          # The prose inputs are a synthesized directory with no .git, and the
+          # annotation reporter needs a repository to attach comments to.
+          reporter: local
           filter_mode: nofilter
           fail_level: error
           sync: false

@@ -15,7 +15,7 @@ make up
 make run
 ```
 
-The API binds to http://127.0.0.1:8080. Run `make worker` in another terminal for continuous delivery. Use Ctrl-C to stop either process.
+The API binds to `http://127.0.0.1:8080`. Run `make worker` in another terminal for continuous delivery. Use Ctrl-C to stop either process.
 
 ## Exercise a request
 
