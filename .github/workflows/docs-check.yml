@@ -118,6 +118,10 @@ jobs:
         if: steps.install.outcome == 'success'
         continue-on-error: true
         working-directory: .docs-standard
+        env:
+          # One explicit cache, so the render step resolves the same build the
+          # installed puppeteer pinned rather than guessing a default path.
+          PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer
         run: ./node_modules/.bin/puppeteer browsers install chrome
       - name: Render scoped diagrams
         id: diagrams
@@ -126,6 +130,7 @@ jobs:
         env:
           SUBJECT: ${{ steps.scope.outputs.root }}
           MMDC_BIN: ${{ github.workspace }}/.docs-standard/node_modules/.bin/mmdc
+          PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer
         run: python3 .docs-standard/skills/axelerant-engineering-documentation/scripts/mermaid_check.py "$SUBJECT" --render
       - name: Install pinned link checker
         id: linktool

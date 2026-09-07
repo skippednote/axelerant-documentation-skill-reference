@@ -29,7 +29,10 @@ def main():
                         # CI runner is an ephemeral trusted environment; never render in a privileged host session.
                         config.write_text(json.dumps({'args':['--no-sandbox','--disable-setuid-sandbox']}))
                         r=subprocess.run([binary,'-i',str(src),'-o',str(dst),'-p',str(config)],capture_output=True,text=True,timeout=60)
-                        if r.returncode or not dst.exists(): errors.append(f'{file}:{line}: {r.stderr[-1000:]}')
+                        if r.returncode or not dst.exists():
+                            # Keep the head: the message is first, the tail is stack frames.
+                            detail=' '.join((r.stderr or r.stdout or 'no output').split())[:400]
+                            errors.append(f'{file}:{line}: {detail}')
         except (ValueError,OSError,subprocess.TimeoutExpired) as e: errors.append(f'{file}: {e}')
     print(f'Mermaid: {count} blocks; {len(errors)} errors; '+('rendered' if args.render else 'static only, parsing not established'))
     for error in errors: print(error)
