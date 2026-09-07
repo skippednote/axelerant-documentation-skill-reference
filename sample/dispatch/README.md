@@ -38,8 +38,7 @@ For interactive HTTP, run `make run` and start `make worker` in another terminal
 | `make status` | Reports counts by delivery state |
 | `make test` | Runs behavior and concurrency tests |
 | `make smoke` | Tests the complete HTTP-to-receipt flow |
-| `make docs-check` | Runs the documentation audit |
-| `make verify` | Runs syntax, behavior and documentation checks |
+| `make verify` | Runs syntax and behavior checks |
 | `make package` | Writes a source archive under dist/ |
 | `make clean` | Deletes only generated state and archives |
 

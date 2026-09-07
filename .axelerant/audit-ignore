@@ -1,4 +1,0 @@
-register skills/*/references/contract.md # the standard names its own rejected terms
-register skills/*/references/anti-fluff.md # the style guide names denied terms
-placeholders skills/*/references/templates/* # templates need substitution
-links skills/*/references/templates/* # links resolve after instantiation

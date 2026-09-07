@@ -1,6 +1,6 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/src
-.PHONY: up init run worker worker-once send status test smoke lint docs-check verify package clean
+.PHONY: up init run worker worker-once send status test smoke lint verify package clean
 up init:
 	$(PYTHON) -m dispatch init
 run:
@@ -19,9 +19,9 @@ smoke:
 	$(PYTHON) -m unittest discover -s tests -p 'test_dispatch.py' -k http_roundtrip -v
 lint:
 	$(PYTHON) -c "import ast,pathlib; [ast.parse(p.read_text()) for d in ('src','tests','scripts') for p in pathlib.Path(d).rglob('*.py')]; print('Python syntax: OK')"
-docs-check:
-	$(PYTHON) ../../skills/axelerant-engineering-documentation/scripts/docs_audit.py . --strict
-verify: lint test docs-check
+# The documentation audit is part of Axelerant's internal tooling and is not
+# distributed with this example, so verify stops at the code.
+verify: lint test
 package:
 	$(PYTHON) scripts/package_example.py
 clean:

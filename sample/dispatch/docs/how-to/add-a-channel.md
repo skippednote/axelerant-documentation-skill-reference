@@ -18,7 +18,6 @@ The local adapter uses the same receipt path for every channel. Integrating a re
 
 ```bash
 make test
-make docs-check
 ```
 
 The validation commands are exercised in the local test suite. No new vendor integration is claimed to have been implemented by this recipe.
