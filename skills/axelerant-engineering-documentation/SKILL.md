@@ -1,52 +1,46 @@
 ---
 name: axelerant-engineering-documentation
-description: Set up or repair repository documentation to the Axelerant Engineering Documentation Standard — tiered README + docs/ contract, MADR ADRs, alert-named runbooks, C4/Mermaid diagrams, frontmatter with last_verified, and the anti-fluff rules. Use when asked to document a repo, add or restructure docs/, write an ADR or runbook, audit or fix documentation, or set up docs for a new project. Handles both brownfield (existing code, existing or absent docs) and greenfield (new repo).
+description: Scaffold, migrate or audit Axelerant repository documentation; write grounded ADRs and alert runbooks, check evidence and validate AGENTS.md and CLAUDE.md.
 ---
 
-# Axelerant Engineering Documentation
+# Axelerant engineering documentation
 
-Produce documentation that a stranger can act on, and that a linter can check. The contract is normative: do not invent alternative layouts, extra folders, or extra files.
+Work from the procedure for the situation and let `scripts/docs_audit.py` be the authority. It
+enforces the machine-checkable half of the policy, so there is no need to recite the rules before
+starting: scaffold or migrate, run the audit, fix what it reports.
 
-## Before anything
+Read `references/anti-fluff.md` before drafting prose. It governs what you are allowed to write and
+the audit cannot check most of it.
 
-1. Read `references/contract.md`. It is the full spec. Everything below assumes it.
-2. Read `references/anti-fluff.md`. It governs what you are allowed to write. Violating it is worse than writing nothing.
-3. Determine the tier. If `.axelerant/repo.yml` exists, use it. If not, classify:
-   - **Tier 0** — one deployable artefact consumed elsewhere: shared module, action, CLI, theme, library.
-   - **Tier 1** — one deployable application: client site, POC, internal app.
-   - **Tier 2** — multiple services, or long-lived product, or on-call exists.
-   When the repo sits on a boundary, pick the lower tier. Ceremony nobody maintains is worse than a gap.
-4. Confirm the tier and the owner with the user before writing files. Those two choices drive everything and you cannot infer the owner.
+Open `references/contract.md` when you need one of three things: a rule the audit does not check, so
+a human has to judge it; the wording to cite in an ADR that deviates from the policy; or the reason
+behind a rule you are about to argue with. `references/validation.md` says which rules fall on which
+side of that line.
 
-## Which workflow
+## Decide the workflow
 
-| Situation | Follow |
-|---|---|
-| Repo has code already, docs absent, partial, or in a different layout | `references/brownfield.md` |
-| New or empty repo | `references/greenfield.md` |
-| One ADR or one runbook needed | `references/contract.md`, sections 6 and 7, plus the templates |
-| "Is this repo compliant?" | Run `scripts/docs_audit.py` |
-| A diagram was written or changed | Run `scripts/mermaid_check.py`, then `--render` if a local `mmdc` is installed |
-| The repo has a `CLAUDE.md` holding architecture or setup | `references/brownfield.md`, step 8 |
-| Picking a README or agent-file template | `references/templates/` — they are per tier; using the wrong one produces dead links |
+Read the checkout and `.axelerant/repo.yml`. Confirm an absent tier, owner, visibility and on-call status before scaffolding. Use `references/brownfield.md` for existing material and `references/greenfield.md` for a new repository. Never guess a command or publish a skeleton as completed documentation.
 
-## Hard rules
+## Ground claims
 
-- **Never write a file you cannot ground.** Every statement comes from code you read, a command you ran, or an answer the user gave. If you cannot ground it, ask or leave the section out. A missing section is a visible gap; an invented one is a lie that outlives you.
-- **Run the commands you document.** A quick start you have not executed is a guess. If you cannot run it, mark `last_verified` absent and say so in your summary.
-- **No placeholder files.** Never create a file whose content is a heading and a `TODO`. Create it when you have the content.
-- **No forward declarations.** Never write an index entry for a file that does not exist, and never write a status document about documentation you plan to write.
-- **Delete rather than migrate filler.** Per-feature catalogues, roadmap folders and docs-about-docs are removed, not relocated. Say what you deleted.
-- **Validate every diagram you write.** Run `scripts/mermaid_check.py <repo>` after writing any Mermaid block, and `--render` when a local `mmdc` is installed — `npm ci` in the standard's checkout, or `MMDC_BIN` pointing at one. It refuses to fetch a renderer at run time, so without one the render pass does not run rather than silently passing. A diagram that fails to parse renders as a red error box on GitHub, which is worse than no diagram. The commonest cause is a semicolon inside note or label text: it separates statements and truncates the block.
-- **Keep the agent file in step with `docs/`.** Whenever you add, move or rename a page, update the jump table in `AGENTS.md` in the same change. A jump table with a dead entry is worse than none: it sends an agent to invent the answer.
-- **Stop at the contract.** Do not add `CONTRIBUTING.md`, `SECURITY.md`, badges, tables of contents or extra folders unless the user asks.
+Read code, configuration, real command output, the actual decision discussion or incident. Cite the source in the change summary. Distinguish a local example from production. Preserve ADR history; do not reuse its number or replace its original reasoning. A new decision supersedes the earlier one.
 
-## Output
+## Agent files
 
-End every run with:
+AGENTS.md is the single repository instruction source. CLAUDE.md contains only `@AGENTS.md`. Validate both after every migration. Keep setup and architecture in their human-facing pages. A moved page and its jump-table link change together.
 
-1. Files created, modified, deleted — as paths.
-2. Sections left empty and the question that would fill each.
-3. `scripts/docs_audit.py` result, and `scripts/mermaid_check.py` if you wrote or changed a diagram.
+## Run checks
 
-Do not claim the docs are complete. State what is grounded and what is not.
+Locate `scripts/docs_audit.py` relative to this SKILL.md; use an absolute script path when the current directory is the repository under audit. Run it with the checkout path and `--strict`. Run `scripts/mermaid_check.py` with `--render` when the approved renderer is installed. A static check is not a successful render.
+
+In the reference implementation also run `make verify`. Report the actual command outputs; never convert an unavailable command into a passing check.
+
+## Evidence verification
+
+Use the evidence method the contract allows for the page type. Review indexes and explanations against source; do not pretend to execute prose. Reference pages need generation, source review or a named automated test. Runbooks use incident evidence or safe response exercises. ADRs receive no verification date.
+
+For executable procedures, first print an approved plan using `scripts/verify_isolated.py`. It accepts explicit commands and a preinstalled immutable Docker image. Without Docker it stops; no host fallback. Do not mount host credentials or grant network access to make a failing procedure appear verified. The runner does not stamp dates: update metadata only after reviewing the successful result and recording its limits.
+
+## Completion
+
+Name files changed, executed checks, evidence dates, manual-review gaps and any blocked release steps. The organization plugin already exists; do not claim this revision has reached it without a successful distribution receipt.

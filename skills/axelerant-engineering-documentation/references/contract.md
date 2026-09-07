@@ -1,183 +1,293 @@
-# The contract
+# Axelerant Engineering Documentation Standard
 
-Normative. Deviations need an ADR.
+Version 1.0.0. Maintainer: Bassam Ismail. Reviewed quarterly.
 
-## 1. Tiers
+This is the canonical repository contract. Confluence publishes the same policy for people; it is not an independently maintained second standard, and it names the adopted version and its immutable source commit. A repository stays on the version it adopted until it adopts a newer commit deliberately; nothing here tracks `main` automatically.
 
-Declared once in `.axelerant/repo.yml`:
+The standard applies to every Axelerant repository, including client work. Tier adjusts the amount of documentation; documentation remains part of the codebase and the handover. A deliberate deviation needs an ADR in the repository that deviates.
+
+## Adoption
+
+Classify the repository, record its owner and visibility, then scaffold or migrate its documentation. Ground pages in code, configuration, a real decision, an incident or an owner answer. Run the strict audit and review the checks that need human evidence. Adopt the shared workflow at an immutable commit.
+
+Existing repositories can start with `enforcement: warn` while completing their required set. New repositories start with `enforcement: block`. Move to blocking in the pull request that completes adoption; do not use warn mode as an indefinite exemption.
+
+## Repository declaration
+
+<!-- check: config -->
 
 ```yaml
-tier: 2                  # 0 | 1 | 2
-kind: service            # service | site | library | action | poc | docs
-owner: "@org/team"       # GitHub team handle; must match CODEOWNERS
-client: acme             # omit for internal
-on_call: true            # true -> docs/runbooks/ required
-docs_review_days: 90     # staleness warning threshold
+# .axelerant/repo.yml
+tier: 2
+kind: service                 # service | site | library | action | cli | poc | docs
+owner: "@axelerant/dispatch-admins"
+visibility: internal          # public | internal | client-confidential
+on_call: true
+docs_review_days: 90
+alerts_file: alerts/alerts.json # required when on_call is true
+# client: acme                 # required for client-confidential work
 ```
 
-| Tier | Definition | Required |
-|---|---|---|
-| 0 | One artefact consumed elsewhere. Module, action, CLI, library, theme. | README only. **No `docs/`.** |
-| 1 | One deployable application. | README + flat `docs/` of exactly five files. |
-| 2 | Multiple services, or long-lived product, or on-call. | README + Diátaxis tree + `adr/` + `runbooks/`. |
+The six fields before `alerts_file` are required. Tier is 0, 1 or 2. Review days are a positive integer. The Boolean is exactly `true` or `false`; misspellings do not become false. Unknown keys and duplicate keys are errors.
 
-Subfolders appear when a folder would hold three or more files. Not before.
+Metadata uses a deliberately small YAML subset: flat scalars and JSON-style lists of quoted strings. Nested YAML, aliases and multiline values are rejected with a diagnostic. Quoted strings can contain `#`. This keeps the core audit dependency-free without silently accepting malformed YAML.
 
-The index of any directory is `README.md`, not `index.md`. GitHub renders it when someone browses
-the folder, so the front door costs no clicks and needs no build step. This applies at every level:
-`docs/README.md`, `docs/adr/README.md`, `docs/runbooks/README.md`.
+<!-- check: ownership -->
 
-## 2. README — all tiers
+The configured owner is a GitHub team handle that already exists, or a single account where no team owns the repository. Teams here are named after the repository, `<repo>-admins` and `<repo>-writers`; there is no central engineering or platform team to fall back on. GitHub ignores an owner it does not recognise, so a handle that looks plausible and does not exist leaves the path with no required reviewer and no error. Confirm the team resolves before you commit it.
 
-Cap 400 lines. Answers one question: can a stranger run this and know who to ask.
+The effective last catch-all `*` rule in CODEOWNERS includes that handle, the README names it, and documentation frontmatter uses it. Review any narrower CODEOWNERS patterns separately: the checker does not resolve all GitHub ownership precedence rules, and it cannot tell whether a handle names a real team.
 
-| # | Section | Required | Contents |
-|---|---|---|---|
-| 1 | `# <name>` | yes | One sentence under 120 characters. What it is, who for. |
-| 2 | `## Status` | yes | `active` / `maintenance` / `archived` / `poc`, plus environment URLs. |
-| 3 | `## Requirements` | yes | Exact versions. Must match what CI pins. |
-| 4 | `## Quick start` | yes | Clone to running instance. Copy-pasteable. Executed before commit. |
-| 5 | `## Common commands` | yes | Table of the 8–15 commands people run. |
-| 6 | `## How we work here` | yes | Branch, commit, PR rules, or a link if the repo uses defaults. |
-| 7 | `## Ownership` | yes | Team, GitHub handle, Slack channel, escalation. |
-| 8 | `## Documentation` | tier 1+ | 4–8 links into `docs/`, each with the question it answers. |
-| 9 | `## Distribution` | if applies | How the artefact is consumed: package name, mirror, action reference. |
+Public documentation contains public-safe facts and fictional examples, not private hostnames, client identifiers, internal channels, real recipient data or access credentials. Internal and client-confidential repositories can contain operational detail appropriate to their access controls. Secrets never belong in documentation. A public support or issue route replaces an internal Slack channel. Classification correctness is a human review responsibility.
 
-Order is fixed. Sections are not renamed.
+## Tiers
 
-## 3. docs/ — Tier 1
+| Tier | Covers | Required human documentation |
+| --- | --- | --- |
+| Component — 0 | Shared modules, actions, CLI tools, themes, libraries and single-purpose scripts | README; no docs/ |
+| Project — 1 | Client sites, proofs of concept and applications with one deployable | README and the Project set |
+| Platform — 2 | Long-lived products, multi-service systems or anything with human on-call responsibility | README, Diátaxis tree, ADRs and alert-linked runbooks when on-call |
 
-Exactly these five. No others, no subfolders except `adr/` once a second decision exists.
+Every tier also has repository ownership and agent instructions. On a genuine boundary, choose the lower tier. On-call responsibility always selects Platform. Independently operated multi-service systems select Platform through human classification; the checker does not infer deployables from folder names.
 
+## README
+
+<!-- check: readme -->
+
+The README answers: can a stranger run this and know who to ask? Cap it at 400 lines. Begin with an H1 and a description of at most 120 characters. Required H2 sections appear once, in this order:
+
+| Section | Contents |
+| --- | --- |
+| Status | active, maintenance, archived or poc; safe environment URLs where applicable |
+| Requirements | Exact pinned CI/tool versions and the supported runtime range |
+| Quick start | Clean checkout to a working result, with executable commands |
+| Common commands | A table: 3–15 commands for Component; 8–15 for Project or Platform |
+| How we work here | Branch, commit and pull-request rules, or a link to adopted defaults |
+| Ownership | Team, support or escalation; a channel for non-public repositories |
+| Documentation | Project and Platform: 4–8 repository links, each stating the question it answers |
+
+Add Distribution when the artifact is consumed as a package, action, image, mirror or release. Do not invent eight commands for a tiny component. Version agreement with actual CI and clean-checkout success require execution and review, not just a valid table.
+
+## Trees and directory indexes
+
+<!-- check: tree -->
+
+A directory index is `README.md`, never `index.md`. Git renders the front door without a documentation build. Create a new subject subfolder only when there are at least three pages; this is advisory for invented folders, not an excuse for empty standard folders.
+
+Project starts with exactly:
+
+```text
+docs/
+├── README.md
+├── getting-started.md
+├── architecture.md
+├── operations.md
+└── decisions.md
 ```
-docs/README.md             what this is, who for, the map
-docs/getting-started.md    laptop to first working change
-docs/architecture.md       arc42 subset + one C4 system context diagram
-docs/operations.md         environments, deploy, rollback, access, monitoring
-docs/decisions.md          running decision log
+
+The first file maps questions; getting-started covers laptop to first working change; architecture covers context and design; operations covers environments, access, deployment, rollback and monitoring. The decision log can contain zero or one decision. At the second decision, replace `decisions.md` with `adr/README.md` and two numbered ADRs. Keep the four other files flat. An assets/ directory is allowed when media exists.
+
+Platform has:
+
+```text
+docs/
+├── README.md
+├── tutorials/       guided learning
+├── how-to/          completing a task now
+├── reference/       looking up a fact
+├── explanation/     understanding why
+├── adr/             decisions
+└── runbooks/        required when on_call is true
 ```
 
-## 4. docs/ — Tier 2
+Each fixed folder has a real `README.md`. The four Diátaxis folders also contain substantive pages, not empty placeholders. Explanation includes `architecture.md`. Runbooks are substantive when on-call is declared. Assets are optional. The fixed folders describe reader intent; the three-page threshold governs additional subject folders.
 
-```
-docs/README.md
-docs/tutorials/            learning by doing. 1-3 files.
-docs/how-to/               task recipes. Largest folder.
-docs/reference/            lookup. Generated where a generator exists.
-docs/explanation/          architecture.md, data-model.md, security.md
-docs/adr/                  MADR, one file per decision
-docs/runbooks/             one per alert. Only when on_call: true
-docs/assets/               images and standalone diagram sources
-```
+## Frontmatter and evidence
 
-A diagram that explains one page lives in that page as a fenced Mermaid block, so GitHub renders it and a change arrives as a reviewable diff. `assets/` exists only for files that are not tied to a single page, or for screenshots. Do not keep a `.mmd` copy of a diagram that is already inline; two copies of a diagram is one diagram and one future lie.
+<!-- check: metadata -->
 
-Diátaxis assignment, when unsure which folder a page belongs in:
-
-| The reader is | Folder |
-|---|---|
-| learning the system for the first time | `tutorials/` |
-| trying to complete a task now | `how-to/` |
-| looking up a fact | `reference/` |
-| trying to understand why | `explanation/` |
-
-## 5. Frontmatter — every file under docs/
+Every Markdown page under docs/ has a title, type and configured owner. Directory README files use `type: index`. Other pages in a Platform folder use its corresponding type.
 
 ```yaml
 ---
-title: Deploy to production
-type: how-to        # tutorial | how-to | reference | explanation | runbook | index
-owner: "@org/team"
-last_verified: 2026-09-01
-applies_to: "v2.4+" # optional
+title: Run locally
+type: how-to
+owner: "@axelerant/dispatch-admins"
+last_verified: 2026-09-03
+verification_method: clean-checkout
+applies_to: "v2.4+"
 ---
 ```
 
-`last_verified` means a human executed the steps and they worked. Not "edited on". Set it only after running the commands. Runbooks expire hard at 180 days.
+One date field avoids competing notions of freshness; `verification_method` states what the date actually proves.
 
-**ADRs are the exception.** A decision is not re-verified, it is superseded. ADR frontmatter is `title`, `type: adr`, `owner`, `status`, `date`, `deciders` — no `last_verified`, and it never goes stale:
+| Type | Allowed evidence method | Meaning |
+| --- | --- | --- |
+| tutorial | clean-checkout, automated-test | Complete the guided path or its corresponding executable test |
+| how-to | clean-checkout, automated-test, staging | Observe the documented outcome in the named environment |
+| reference | generated, source-review, automated-test | Regenerate or compare against authoritative source |
+| explanation | source-review | Compare claims with code, configuration and accepted decisions |
+| index | link-review | Confirm destinations and question labels are current |
+| runbook | incident, staging-drill, tabletop | Use incident evidence, an isolated exercise or a structured response walkthrough |
+
+The method is not proof by itself. Include the executed command, test, incident or reviewed source in the pull request. Automated source review must not be described as a human on-call sign-off. The sample explicitly identifies its isolated local drills as simulations.
+
+<!-- check: freshness -->
+
+Dates use real calendar dates in YYYY-MM-DD format and may not be in the future. Runbooks block after 180 days. Other pages warn after `docs_review_days`; Platform pages block after twice that period. A file edit alone never refreshes its date.
+
+## Decision records
+
+<!-- check: adr -->
+
+Use `docs/adr/NNNN-kebab-title.md`. Component deviations use .axelerant/adr/ because Component repositories cannot have docs/. Never renumber or erase accepted history; supersede it.
 
 ```yaml
 ---
-title: Use SQS for the outbound queue
+title: Choose the queue model
 type: adr
-owner: "@org/team"
-status: accepted    # proposed | accepted | superseded by NNNN | deprecated
-date: 2026-03-11
-deciders: ["@org/team"]
+owner: "@axelerant/dispatch-admins"
+status: accepted
+date: 2026-09-03
+deciders: ["@axelerant/dispatch-admins"]
 ---
 ```
 
-## 6. ADRs
+Allowed status values are proposed, accepted, deprecated, or `superseded by NNNN`. ADRs have no freshness or verification-method fields. Sections are Context and problem statement, Considered options, Decision, Consequences. List at least two plausible options and an explicit downside or cost. A reviewer assesses plausibility and whether the record represents a real decision.
 
-Path `docs/adr/NNNN-kebab-title.md`. Four digits, never renumbered, never deleted. Superseding writes a new ADR and flips the old status.
+Write an ADR for a datastore, framework, hosting model, authentication approach, service boundary or deliberate house-default deviation that is expensive to reverse. After roughly fifty records, index accepted decisions by area. Superseded records remain reachable as historical material but leave the accepted index.
 
-Frontmatter per section 5. Sections, in order: Context and problem statement, Considered options, Decision, Consequences.
+## Alerts and runbooks
 
-Rules:
-- Two or more real options. One option is not a decision; do not write the ADR.
-- Consequences carries a bad list. An ADR with no downside was an announcement.
-- Write one for anything expensive to reverse: datastore, framework, hosting, auth, a service boundary, a deliberate deviation from a house default.
-- Past ~50 ADRs, add `docs/adr/README.md` indexing accepted ones by area. Superseded drop out.
+<!-- check: alerts -->
 
-## 7. Runbooks
+Every paging alert has exactly one runbook and every runbook has an alert. An on-call repository provides a normalized JSON register through `alerts_file`:
 
-Path `docs/runbooks/<alert-name>.md`, named after the alert, not the subsystem. One per alert that can page a human. The alert definition links to the file.
+```json
+[
+  {
+    "name": "DispatchQueueDepthCritical",
+    "runbook": "docs/runbooks/dispatch-queue-depth-critical.md",
+    "condition": "queued > 50"
+  }
+]
+```
 
-Sections, in order: Trigger, Impact, Diagnose, Mitigate, Escalate, After.
+Generate that register from the actual alert system where feasible. A reviewer confirms it is complete and synchronized; validating the register alone cannot prove that no unregistered production alerts exist. The sample evaluator is local and does not send pages.
 
-- Diagnose steps are ordered, carry real commands, and state what a good result looks like.
-- Mitigate puts the safe action first and marks the risky one risky.
-- Escalate names a team, a channel, and the point at which you stop trying.
-- Whoever is paged updates the file before closing the incident.
+Runbook frontmatter adds `alert` and `alert_source`. Its filename is the kebab-case alert name. Trigger includes the exact name and register condition, including duration when the real rule has one. Required sections are Trigger, Impact, Diagnose, Mitigate, Escalate, After.
 
-A single generic `operations/runbook.md` does not satisfy this.
+Diagnosis is ordered with commands and healthy results. Mitigation puts the safe action first and marks risky actions. Escalation names a team and permitted support route, plus a stop condition. After identifies evidence to retain and the incident record or issue. Responders correct inaccurate steps before closing an incident.
 
-## 8. Diagrams
+Do not execute production mitigation to refresh a date. Use an incident, safe exercise or tabletop. A generic service runbook is not a substitute for alert-specific response.
 
-- C4 Level 1 (system context): required at Tier 1 and 2. One diagram.
-- C4 Level 2 (containers): required at Tier 2.
-- Sequence diagrams: optional, for flows prose keeps failing on.
-- Levels 3 and 4: banned. Not maintainable by hand.
-- Mermaid only, inline in the page it explains. `.mmd` files under `docs/assets/diagrams/` only for diagrams not tied to a single page. No exported PNGs except UI screenshots, where the image is the content.
-- Sequence diagrams earn their place where prose is densest: a race, a retry path, a multi-party handshake. A state diagram is worth it when a status column moves in more than two ways.
-- Every block is validated before it is committed. `scripts/mermaid_check.py` runs the static checks with no dependencies; CI runs the same script with `--render`, which hands each block to mermaid-cli and is the only authoritative answer to whether it renders. An unparseable diagram shows as a red error box on GitHub, so it is a blocking finding, not a warning.
-- Watch for a semicolon inside note or label text. It separates statements, truncates the block, and the error surfaces several lines later.
+## Diagrams
 
-## 9. Agent files
+<!-- check: diagrams -->
 
-- `AGENTS.md` at the root is the source of truth. Cap 200 lines.
-- `CLAUDE.md` is one line: `@AGENTS.md`.
-- Holds: rules, guardrails, conventions that differ from tool defaults, pitfalls, verification commands, a jump table into `docs/`.
-- Does not hold: architecture, directory layouts, setup steps, or anything duplicated from `docs/`.
+Project and Platform contain exactly one C4Context diagram under docs/. Platform also contains exactly one C4Container diagram. Use sequence diagrams for retries, races and multi-party exchanges and state diagrams for branching status transitions. Do not hand-maintain C4 component or code-level diagrams. Dynamic and deployment views are not falsely classified as C4 hierarchy levels; add them only for a real reader question.
 
-## 10. Must not exist
+Mermaid lives inline in its explanatory page. Do not duplicate it in an exported source or image. Screenshots remain appropriate for UI walkthroughs where the image is the content.
 
-- `docs/features/f001…` or any per-feature catalogue.
-- `docs/improvements/`, `docs/roadmap/`, `backlog-roadmap.md`.
-- `DOCUMENTATION_STATUS.md`, `MASTER_INDEX.md`, `IMPLEMENTATION_SUMMARY.md`.
-- GitHub wiki content.
-- Loose markdown at the repo root other than README, AGENTS, CLAUDE, LICENSE, CHANGELOG.
-- Links out to Confluence or Drive for anything needed to run the code.
+The dependency-free check verifies fences, nonempty Mermaid and required diagram presence. It is not a Mermaid parser. The rendered CI check is required to establish parse success. Do not reject every semicolon or count `end` across diagram languages; those heuristics produce false errors.
 
-## 11. Enforcement
+## Writing and location rules
 
-Copy `references/templates/docs-workflow.yml` to `.github/workflows/docs.yml`. It pins the reusable workflows and the contract to one immutable commit; a tag can be moved, and one of those workflows holds `pull-requests: write`. It calls the shared reusable workflow, so the contract, the audit script, the Vale style and the markdownlint config are pulled at a pinned ref rather than vendored into each repo.
+<!-- check: paths -->
 
-| Check | Level | Fails on |
-|---|---|---|
-| contract | block | Missing README section, missing tier-required file, Tier 0 with a `docs/` |
-| frontmatter | block | A file under `docs/` missing the fields for its type |
-| placeholders | block | `TODO`, `TBD`, `<your-`, `REPLACE_WITH_`, `coming soon` in prose |
-| banned register | block | The deny-list from `anti-fluff.md`, in prose |
-| markdownlint | block | Structure |
-| Vale | block | The same deny-list, in prose |
-| links | block | A dead link in any markdown file |
-| staleness | warn | `last_verified` past `docs_review_days`; blocks at 2x on Tier 2; runbooks block at 180 days |
-| coupling | comment | A PR that changes code and no documentation |
+No roadmap or improvements folders, numbered feature catalogues, documentation-status files, master indexes or implementation summaries. Plans belong in Jira. Root Markdown is limited to README, AGENTS, CLAUDE, LICENSE, CHANGELOG, CONTRIBUTING and SECURITY. Avoid Markdown symlinks; checked documentation stays within its repository boundary.
 
-Prose means: after fenced blocks and inline code are stripped. A document may name the tokens it rejects.
+Confluence remains appropriate for organization policy, commercial context and client-facing material. Build, run, deploy, recovery and design facts are self-contained in the repository. A business-context link is not itself an error, but it must not be the only source for an operational fact. Respect access classification when mirroring content. GitHub wikis are not the operational source.
 
-`.axelerant/audit-ignore` holds globs that are skipped, one per line, for files that must carry rejected tokens in prose. Adding to it needs a reason in the PR.
+<!-- check: placeholders -->
 
-Roll out as `strict: false` for a quarter, then flip. New repos start at `strict: true`.
+No unresolved placeholders in published prose, including `TODO`, `TBD`, `REPLACE_WITH_`, `<your-domain>` and `coming soon`. Templates can contain them only through scoped exemptions. Fenced examples and inline literals are not mistaken for unfinished prose.
+
+<!-- check: register -->
+
+The rejected register is stored once in `fluff-terms.txt`. It includes vague intensifiers and throat-clearing such as:
+
+```text
+comprehensive · robust · seamless · leverage · utilize · cutting-edge
+state-of-the-art · powerful · rich set of · wide range of
+it's important to note · it's worth noting · as we all know · needless to say
+in today's fast-paced · delve into · a testament to · plays a vital role
+this document aims to · this section will cover · in conclusion · let's dive in
+```
+
+A document answers a real onboarding question, review comment, task or incident. Do not narrate functions, directories, dependency inventories or features. Generate API, configuration and CLI reference where possible; otherwise use a source-backed table. Explanations name alternatives and costs, not just the chosen path. Emoji are not section markers.
+
+Word budgets warn at 300 for index, 800 for how-to, 1,200 for tutorial, 1,500 for explanation, 600 for ADR and 700 for runbook. Reference is unbounded but preferably generated or tabular. Human review decides whether an oversized page needs editing or a justified exception.
+
+<!-- check: links -->
+
+Relative links and heading anchors must resolve inside the repository. The checker supports inline links and reference definitions. External links are checked separately, with authenticated destinations reviewed by authorized people. A link that resolves can still be the wrong destination.
+
+## Agent instructions
+
+<!-- check: agents -->
+
+`AGENTS.md` is the only source of repository-specific agent rules. `CLAUDE.md` contains exactly:
+
+```text
+@AGENTS.md
+```
+
+Keep `AGENTS.md` under 200 lines. Start with a table naming Surface and Audience. Include Hard rules, Before claiming done, and Where to look. Guardrails, non-default conventions, known pitfalls and verification commands belong here. Setup and architecture do not; link to their owners instead.
+
+The jump table points to existing Markdown. Add, move or remove its entry with the page. The checker validates its destinations and the exact Claude import. The plugin-bundle validator checks the manifest, command delegation and skill metadata. Tool support can change; do not claim every agent reads the same file without checking that tool's documentation.
+
+## Tooling and safety
+
+In Claude Code:
+
+```text
+/plugin marketplace add axelerant/claude-plugins
+/plugin install axelerant-engineering-documentation
+```
+
+Commands are namespaced:
+
+| Command | Function |
+| --- | --- |
+| /axelerant-engineering-documentation:docs-init | Confirm classification, scaffold or migrate, then audit |
+| /axelerant-engineering-documentation:docs-check | Read-only audit and manual-review gaps |
+| /axelerant-engineering-documentation:docs-verify | Plan evidence checks; run approved procedures only in isolation |
+
+Those three are skills. Claude Code treats a flat file in `commands/` and a folder in `skills/` as the same thing and namespaces both under the plugin, which is why they appear wherever the plugin is installed, including the Claude app when the organization distributes it there. Natural-language requests activate them too.
+
+What differs between surfaces is not the skill, it is what the skill can reach. A full audit needs a checkout; in the Claude app there is none, so supply the files or use Claude Code. Copying the skill folder on its own gives you the audit and migration guidance without the three entry points.
+
+Repository commands are untrusted input. The supplied isolated runner uses a preinstalled immutable image, no host mount, no network, an empty command environment and resource limits. Without Docker or an explicitly approved plan it prints the plan and stops. It does not stamp dates automatically. Docker isolation reduces risk; it is not a guarantee against container-runtime vulnerabilities or an untrusted image. Human review approves the image and commands. Never grant network or production access merely to make verification pass.
+
+## Continuous integration and governance
+
+Adopting workflows pin shared code and contract data to the same reviewed 40-character commit. The shipped `docs-workflow.yml` template is already pinned and can be copied as it stands; `scripts/render_workflow.py` generates the same file against any other reviewed commit. The reference repository's own workflow uses its current checkout, not a prior tag. Local additions may extend policy; they may not replace the shared configuration with weaker rules.
+
+The reusable workflow accepts `path`, `ref`, and `enforcement: warn | block`. For compatibility, `strict: false` selects warn when enforcement is omitted. Every finding-producing check is collected; a single final step applies the selected mode. Configuration, checkout and tool-installation failures remain visible even in warn mode rather than masquerading as a passing audit. No hidden skip switches are provided.
+
+Code/documentation coupling is an idempotent best-effort reminder. It never runs pull-request code with a write token and never blocks a merge. A code change does not automatically require a documentation edit; the reviewer decides whether running, changing or operating behavior changed.
+
+Scoped exemptions use:
+
+```text
+register path/to/style-guide.md # the guide names the rejected vocabulary
+placeholders path/to/templates/* # instructional template content
+links path/to/templates/* # destinations exist after instantiation
+```
+
+Only those three rules can be exempted. Broad legacy ignores are errors, not a way to skip ownership, freshness, structure, diagrams or agent validation.
+
+Each rule is machine-enforced, manually reviewed or advisory. The coverage matrix identifies the boundary; the coverage check verifies identifiers, while regression tests demonstrate behavior. Identifier matching alone does not prove a rule is correct. Release review requires the full test suite and remote checks.
+
+## Release and dependency gate
+
+Use exact direct dependency versions and immutable action SHAs; refresh lockfiles through the package manager. Do not delete lockfiles to make upgrades pass. A release requires successful installation, vulnerability checks, Markdown and external-link checks, Mermaid rendering, the executable sample, and a real Claude plugin load test.
+
+Local Python tests do not certify Node or browser installation, hosted CI, or a plugin load. Publish the policy and distribute the plugin after those checks pass, in that order. Edit the reference source, never a marketplace copy that would then drift from it.
+
+## Manual review and foundations
+
+Review classification, actual ownership, exact runtime versions, command outcomes, architectural accuracy, credible alternatives, full alert coverage, safe mitigation, current escalation and permitted visibility. None is proven just by a matching string or a recent date.
+
+The structure draws on Diátaxis, MADR, an arc42 architecture subset, C4, Google SRE, standard-readme and documentation-with-code practices. Axelerant's tier rules, word budgets, evidence methods and expiry thresholds are policy choices, not universal properties of those sources.

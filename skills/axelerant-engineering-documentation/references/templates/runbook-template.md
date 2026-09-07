@@ -1,38 +1,33 @@
 ---
-title: <AlertName>
+title: Replace with actual title
 type: runbook
 owner: "@org/team"
-last_verified: <YYYY-MM-DD>
+last_verified: "DATE_AFTER_EVIDENCE"
+verification_method: tabletop
+alert: EXACT_ALERT_NAME
+alert_source: alerts/alerts.json
 ---
-
-# <AlertName>
 
 ## Trigger
 
-<Exact alert name, and the query or threshold that fires it.>
+Record verified incident or drill evidence.
 
 ## Impact
 
-<Who notices, how fast, what breaks. Severity.>
+Record verified incident or drill evidence.
 
 ## Diagnose
 
-1. <Check> — `<command>`
-   Good result looks like: <what you expect to see>
-2. <Check> — <dashboard link>
-   Good result looks like: <what you expect to see>
+Record verified incident or drill evidence.
 
 ## Mitigate
 
-1. **Safe:** <action> — `<command>`
-2. **Risky:** <action> — `<command>` — <what it costs if wrong>
+Record verified incident or drill evidence.
 
 ## Escalate
 
-- <@team> in <#channel>.
-- Stop trying and escalate when: <condition>.
+Record verified incident or drill evidence.
 
 ## After
 
-- Record <what> in <where>.
-- Update this runbook before closing the incident.
+Record verified incident or drill evidence.

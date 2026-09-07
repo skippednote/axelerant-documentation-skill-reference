@@ -1,42 +1,33 @@
-# <name>
+# Repository name
 
-<One sentence, under 120 characters: what it is and who uses it.>
+Describe the repository and intended user in at most 120 characters.
 
 ## Status
 
-`active` · production <url> · staging <url>
+poc
 
 ## Requirements
 
-- <runtime and exact version — must match CI>
-- <service dependency and version>
+Record exact versions from CI and toolchain manifests.
 
 ## Quick start
 
-```bash
-<clone to running instance, copy-pasteable, executed before commit>
-```
+Insert only commands that have been executed successfully.
 
 ## Common commands
 
-| Command | Does |
-|---|---|
-| `<cmd>` | <what happens> |
+| Command | Outcome |
+| --- | --- |
+| command | observed result |
 
 ## How we work here
 
-<Branch naming, commit convention, PR and review rules, or a link.>
+State adopted branch and review rules.
 
 ## Ownership
 
-- Team: <@org/team>
-- Slack: <#channel>
-- Escalation: <who, when>
+Name the real team and public-safe support or escalation route.
 
 ## Documentation
 
-- [What this is and how to navigate](docs/README.md)
-- [Get it running locally](docs/getting-started.md) — <question it answers>
-- [How it is built and why](docs/architecture.md) — <question it answers>
-- [Deploy, roll back, and access](docs/operations.md) — <question it answers>
-- [Why it is shaped this way](docs/decisions.md) — <question it answers>
+Add four to eight links after their destinations exist.

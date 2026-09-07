@@ -1,49 +1,21 @@
 ---
-title: Deploy dispatch and roll back
+title: Package the local example
 type: how-to
-owner: "@axelerant/platform-team"
-last_verified: 2026-09-01
+owner: "@axelerant/dispatch-admins"
+last_verified: 2026-09-03
+verification_method: automated-test
 ---
 
-# Deploy dispatch and roll back
+# Package the local example
 
-## Before you start
-
-- Merge rights on `main`, or an approved PR
-- `kubectl` context `platform-prod` (`kubectl config get-contexts`)
-- Membership of `@axelerant/platform-team`
-
-## Deploy
-
-Merging to `main` builds an image tagged with the commit SHA and deploys it to staging. Production is a manual promotion.
+This fixture has no staging or production deployment. The handover operation packages its source.
 
 ```bash
-gh workflow run promote.yml -f sha=<commit-sha> -f env=production
-gh run watch
+make package
 ```
 
-The workflow does a rolling restart of the `dispatch-api` and `dispatch-worker` deployments. Migrations run as a pre-deploy job and must be backwards compatible for one release; the old pods keep serving while the new ones start.
+The archive is `dist/dispatch.zip`. It includes the Makefile, source, tests and documentation. It excludes generated state and caches.
 
-## Confirm
+Extract it into a fresh directory to run `make test`. `make docs-check` is run from the parent reference checkout because the checker is deliberately not duplicated inside this example.
 
-```bash
-kubectl -n dispatch get pods -w                 # all Running, none restarting
-curl -s https://dispatch.internal/healthz
-kubectl -n dispatch logs -l app=dispatch-worker --since=2m | grep -c 'dispatcher sent'
-```
-
-The last command should be non-zero within two minutes on any weekday. Zero at low traffic is not conclusive; check the queue depth dashboard instead.
-
-## Roll back
-
-```bash
-kubectl -n dispatch rollout undo deployment/dispatch-api
-kubectl -n dispatch rollout undo deployment/dispatch-worker
-```
-
-Rolling back does not revert migrations. A migration that is not backwards compatible cannot be rolled back this way — write a forward fix instead. This is why the compatibility rule exists.
-
-## Related
-
-- [Environments](../reference/environments.md)
-- [Queue depth runbook](../runbooks/dispatch-queue-depth-critical.md)
+Keep the previous archive for rollback; extract it separately rather than overlaying different source versions.

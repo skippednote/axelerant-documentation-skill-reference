@@ -1,40 +1,41 @@
 name: docs-coupling
-
 on:
   workflow_call:
     inputs:
       ref:
-        description: Ref of the reference repo the script is read from.
         type: string
-        default: "v1"
-
+        required: true
 permissions:
   contents: read
   pull-requests: write
-
 jobs:
   remind:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    continue-on-error: true
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
-      - name: Check out the repo under review
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      # The caller vendors nothing, so the script comes from here, not from
-      # the repository being checked.
-      - name: Check out the standard
-        uses: actions/checkout@v7
-        with:
-          repository: skippednote/axelerant-documentation-skill-reference
-          ref: ${{ inputs.ref }}
-          path: .docs-standard
-
-      - name: Comment when code moved and docs did not
+      - name: Best-effort reminder without executing pull-request code
         env:
           GH_TOKEN: ${{ github.token }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPOSITORY: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
-        run: bash .docs-standard/scripts/docs_coupling.sh
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess
+          repo=os.environ['REPOSITORY']; pr=os.environ['PR']
+          def gh(*args):
+              return subprocess.check_output(['gh','api',*args],text=True)
+          try:
+              files=gh(f'repos/{repo}/pulls/{pr}/files','--paginate','--jq','.[].filename').splitlines()
+              docs=any(p.endswith('.md') or p.startswith('.axelerant/') for p in files)
+              code=any(p.endswith(('.py','.js','.ts','.tsx','.go','.php','.rs','.tf','.sql','.yaml','.yml')) for p in files)
+              if not code or docs: raise SystemExit(0)
+              marker='<!-- axelerant-docs-coupling -->'
+              body=marker+'\nCode changed without documentation. Update the matching page when running, deployment or operational behavior changed; otherwise no documentation edit is required.'
+              comments=gh(f'repos/{repo}/issues/{pr}/comments','--paginate','--jq','.[] | @json').splitlines()
+              # Only update this workflow bot's prior comment, never a user's imitation.
+              own=[json.loads(c) for c in comments if marker in json.loads(c).get('body','') and json.loads(c).get('user',{}).get('login')=='github-actions[bot]']
+              if own: gh(f'repos/{repo}/issues/comments/{own[0]["id"]}','--method','PATCH','-f','body='+body)
+              else: gh(f'repos/{repo}/issues/{pr}/comments','--method','POST','-f','body='+body)
+          except Exception as e: print('::warning::Documentation reminder not delivered: '+str(e))
+          PY

@@ -1,26 +1,19 @@
-name: docs
-
+# This nested file is an example for an extracted sample repository.
+# The parent repository's active workflow separately checks this sample's docs.
+name: example-tests
 on:
   push:
-    branches: [main]
   pull_request:
-
+permissions:
+  contents: read
 jobs:
-  docs:
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@v1
-    with:
-      path: "."
-      strict: true      # set false for the warn-only period, then flip
-      ref: v1
-      # Directories of file templates, whose relative links resolve only once
-      # the template is instantiated. Omit if the repo has none.
-      # link_exclude_paths: path/to/templates
-
-  coupling:
-    if: github.event_name == 'pull_request'
-    # Required. A called workflow cannot hold more permission than the caller
-    # grants it, and without this the whole file is rejected at startup.
-    permissions:
-      contents: read
-      pull-requests: write
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@v1
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.14.7
+      - run: make test

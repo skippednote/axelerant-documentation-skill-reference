@@ -1,5 +1,7 @@
 tier: 2
 kind: service
-owner: "@axelerant/platform-team"
+owner: "@axelerant/dispatch-admins"
+visibility: public
 on_call: true
+alerts_file: alerts/alerts.json
 docs_review_days: 90

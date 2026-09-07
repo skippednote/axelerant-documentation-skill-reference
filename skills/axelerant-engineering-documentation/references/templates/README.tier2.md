@@ -1,44 +1,33 @@
-# <name>
+# Repository name
 
-<One sentence, under 120 characters: what it is and who uses it.>
+Describe the repository and intended user in at most 120 characters.
 
 ## Status
 
-`active` · production <url> · staging <url>
+poc
 
 ## Requirements
 
-- <runtime and exact version — must match CI>
-- <service dependency and version>
+Record exact versions from CI and toolchain manifests.
 
 ## Quick start
 
-```bash
-<clone to running instance, copy-pasteable, executed before commit>
-```
+Insert only commands that have been executed successfully.
 
 ## Common commands
 
-| Command | Does |
-|---|---|
-| `<cmd>` | <what happens> |
+| Command | Outcome |
+| --- | --- |
+| command | observed result |
 
 ## How we work here
 
-<Branch naming, commit convention, PR and review rules, or a link.>
+State adopted branch and review rules.
 
 ## Ownership
 
-- Team: <@org/team>
-- Slack: <#channel>
-- Escalation: <who, when>
+Name the real team and public-safe support or escalation route.
 
 ## Documentation
 
-Build this list from pages that exist. Four to eight entries, each with the question it answers.
-The index and the architecture page are the two a Platform-tier repo always has; the rest depend on
-what has been written, and the runbooks entry belongs here only when `on_call` is true. A link to a
-page that does not exist yet is a blocking finding, not a placeholder.
-
-- [What this is and how to navigate](docs/README.md) — <question it answers>
-- [How it is built and why](docs/explanation/architecture.md) — <question it answers>
+Add four to eight links after their destinations exist.

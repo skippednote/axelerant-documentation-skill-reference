@@ -1,5 +1,6 @@
 tier: 0
 kind: library
-owner: "@axelerant/engineering"
+owner: "@skippednote"
+visibility: public
 on_call: false
-docs_review_days: 180
+docs_review_days: 90

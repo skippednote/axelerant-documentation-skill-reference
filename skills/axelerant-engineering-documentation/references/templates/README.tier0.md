@@ -1,38 +1,29 @@
-# <name>
+# Repository name
 
-<One sentence, under 120 characters: what it is and who uses it.>
+Describe the repository and intended user in at most 120 characters.
 
 ## Status
 
-`active` — <where it is consumed, if that is not obvious from Distribution.>
+poc
 
 ## Requirements
 
-- <runtime and exact version>
-- <dependency and exact version>
+Record exact versions from CI and toolchain manifests.
 
 ## Quick start
 
-```bash
-<install / enable, copy-pasteable>
-```
+Insert only commands that have been executed successfully.
 
 ## Common commands
 
-| Command | Does |
-|---|---|
-| `<cmd>` | <what happens> |
+| Command | Outcome |
+| --- | --- |
+| command | observed result |
 
 ## How we work here
 
-<Branch, commit and PR rules, or a one-line link to the handbook if the repo uses the defaults.>
+State adopted branch and review rules.
 
 ## Ownership
 
-- Team: <@org/team>
-- Slack: <#channel>
-- Escalation: <who, when>
-
-## Distribution
-
-<Package name, mirror, or action reference. How a consumer pins it.>
+Name the real team and public-safe support or escalation route.

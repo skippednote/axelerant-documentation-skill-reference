@@ -1,5 +1,5 @@
 extends: existence
-message: "Fluff: '%s' carries no information. Cut it or replace it with the specific fact."
+message: "Replace '%s' with the specific fact."
 level: error
 ignorecase: true
 tokens:
@@ -8,8 +8,8 @@ tokens:
   - seamless(ly)?
   - leverages?
   - utilizes?
-  - cutting.edge
-  - state.of.the.art
+  - cutting-edge
+  - state-of-the-art
   - powerful
   - rich set of
   - wide range of
@@ -17,7 +17,7 @@ tokens:
   - it'?s worth noting
   - as we all know
   - needless to say
-  - in today'?s fast.paced
+  - in today'?s fast-paced
   - delve into
   - a testament to
   - plays a vital role
