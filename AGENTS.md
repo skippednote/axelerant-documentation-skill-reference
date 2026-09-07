@@ -1,7 +1,7 @@
 # Documentation-standard agent instructions
 
 | Surface | Audience | Owns |
-|---|---|---|
+| --- | --- | --- |
 | README.md and references/contract.md | Engineers | Policy and adoption |
 | AGENTS.md | Coding agents | Guardrails and verification |
 
@@ -26,7 +26,7 @@ For a release, also run `make verify-release` and test a real plugin load in Cla
 ## Where to look
 
 | Need | Page |
-|---|---|
+| --- | --- |
 | Policy | `skills/axelerant-engineering-documentation/references/contract.md` |
 | Automation boundary | `skills/axelerant-engineering-documentation/references/validation.md` |
 | Skill behavior | `skills/axelerant-engineering-documentation/SKILL.md` |

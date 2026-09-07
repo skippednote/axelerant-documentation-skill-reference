@@ -17,7 +17,7 @@ Insert only commands that have been executed successfully.
 ## Common commands
 
 | Command | Outcome |
-|---|---|
+| --- | --- |
 | command | observed result |
 
 ## How we work here

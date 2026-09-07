@@ -1,7 +1,7 @@
 # dispatch agent instructions
 
 | Surface | Audience | Owns |
-|---|---|---|
+| --- | --- | --- |
 | README.md and docs/ | Engineers | Setup, architecture and operations |
 | AGENTS.md | Coding agents | Guardrails and completion checks |
 
@@ -25,7 +25,7 @@ The owning repository runs rendered diagram validation separately. A static chec
 ## Where to look
 
 | Need | Page |
-|---|---|
+| --- | --- |
 | Runtime | `docs/how-to/run-locally.md` |
 | Retry semantics | `docs/explanation/delivery-semantics.md` |
 | API | `docs/reference/api.md` |

@@ -9,7 +9,7 @@ verification_method: source-review
 # Command reference
 
 | Command | Behavior |
-|---|---|
+| --- | --- |
 | python3 -m dispatch init | Create schema without resetting active work |
 | python3 -m dispatch api | Start local HTTP API |
 | python3 -m dispatch worker | Poll ready work continuously |

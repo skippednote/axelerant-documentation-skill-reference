@@ -1,7 +1,7 @@
 # What validation establishes
 
 | Rule group | Automated evidence | Human review still needed |
-|---|---|---|
+| --- | --- | --- |
 | config | Required values, types, duplicate and unknown keys | Actual tier and access classification |
 | ownership | Catch-all CODEOWNERS team, README and page ownership | Narrower patterns and real accountability |
 | readme | Sections, order, length, status, command and link counts | Exact version agreement and clean execution |

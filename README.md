@@ -34,7 +34,7 @@ In the Claude app, use the organization-provided plugin. Copying only the skill 
 ## Common commands
 
 | Command | Does |
-|---|---|
+| --- | --- |
 | `make audit` | Checks the reference and nested example separately |
 | `make test` | Runs positive and negative checker tests |
 | `make sample` | Runs the executable sample and its documentation checks |

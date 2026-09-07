@@ -9,7 +9,7 @@ verification_method: source-review
 # Execution environments
 
 | Environment | Persistence | Network |
-|---|---|---|
+| --- | --- | --- |
 | Unit tests | Temporary directory | None |
 | HTTP smoke test | Temporary directory | Loopback only |
 | Interactive demo | .state until clean | Loopback only |

@@ -1,7 +1,7 @@
 # Repository agent instructions
 
 | Surface | Audience | Owns |
-|---|---|---|
+| --- | --- | --- |
 | README.md and docs/ | Engineers | Operational facts |
 | AGENTS.md | Agents | Guardrails |
 

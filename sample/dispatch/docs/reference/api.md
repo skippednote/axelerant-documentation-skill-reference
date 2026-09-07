@@ -11,7 +11,7 @@ verification_method: source-review
 Source: `src/dispatch/app.py`.
 
 | Method | Route | Result |
-|---|---|---|
+| --- | --- | --- |
 | GET | /healthz | 200 after a database read; 503 on a database error |
 | GET | /metrics | JSON counts for queued, processing, sent and failed |
 | POST | /v1/messages | 202 with id and queued status |

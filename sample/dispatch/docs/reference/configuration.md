@@ -9,7 +9,7 @@ verification_method: source-review
 # Configuration
 
 | Setting | Default | Source |
-|---|---|---|
+| --- | --- | --- |
 | DISPATCH_STATE | .state | Process environment |
 | --state | Environment default | Global CLI argument |
 | api --port | 8080 | CLI argument |

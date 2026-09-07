@@ -41,7 +41,7 @@ Public documentation contains public-safe facts and fictional examples, not priv
 ## Tiers
 
 | Tier | Covers | Required human documentation |
-|---|---|---|
+| --- | --- | --- |
 | Component — 0 | Shared modules, actions, CLI tools, themes, libraries and single-purpose scripts | README; no docs/ |
 | Project — 1 | Client sites, proofs of concept and applications with one deployable | README and the Project set |
 | Platform — 2 | Long-lived products, multi-service systems or anything with human on-call responsibility | README, Diátaxis tree, ADRs and alert-linked runbooks when on-call |
@@ -55,7 +55,7 @@ Every tier also has repository ownership and agent instructions. On a genuine bo
 The README answers: can a stranger run this and know who to ask? Cap it at 400 lines. Begin with an H1 and a description of at most 120 characters. Required H2 sections appear once, in this order:
 
 | Section | Contents |
-|---|---|
+| --- | --- |
 | Status | active, maintenance, archived or poc; safe environment URLs where applicable |
 | Requirements | Exact pinned CI/tool versions and the supported runtime range |
 | Quick start | Clean checkout to a working result, with executable commands |
@@ -120,7 +120,7 @@ applies_to: "v2.4+"
 One date field avoids competing notions of freshness; `verification_method` states what the date actually proves.
 
 | Type | Allowed evidence method | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | tutorial | clean-checkout, automated-test | Complete the guided path or its corresponding executable test |
 | how-to | clean-checkout, automated-test, staging | Observe the documented outcome in the named environment |
 | reference | generated, source-review, automated-test | Regenerate or compare against authoritative source |
@@ -247,7 +247,7 @@ In Claude Code:
 Commands are namespaced:
 
 | Command | Function |
-|---|---|
+| --- | --- |
 | /axelerant-engineering-documentation:docs-init | Confirm classification, scaffold or migrate, then audit |
 | /axelerant-engineering-documentation:docs-check | Read-only audit and manual-review gaps |
 | /axelerant-engineering-documentation:docs-verify | Plan evidence checks; run approved procedures only in isolation |

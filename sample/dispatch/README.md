@@ -29,7 +29,7 @@ For interactive HTTP, run `make run` and start `make worker` in another terminal
 ## Common commands
 
 | Command | Does |
-|---|---|
+| --- | --- |
 | `make up` | Creates the SQLite schema without changing existing claims |
 | `make run` | Runs the API at http://127.0.0.1:8080 |
 | `make worker` | Polls the queue until interrupted |

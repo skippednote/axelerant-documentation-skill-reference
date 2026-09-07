@@ -11,7 +11,7 @@ verification_method: link-review
 Use the local implementation to test the documentation contract, not as a production service.
 
 | Question | Page |
-|---|---|
+| --- | --- |
 | How is a notification delivered? | [Tutorial](tutorials/first-notification.md) |
 | How do I run it? | [Local setup](how-to/run-locally.md) |
 | What routes exist? | [API](reference/api.md) |
