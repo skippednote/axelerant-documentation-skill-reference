@@ -20,9 +20,9 @@ permissions:
   contents: read
 jobs:
   docs:
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@PINNED_RELEASE_COMMIT
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-check.yml@e208c21f6a676204c01c903422e07cbe3841b5db
     with:
-      ref: PINNED_RELEASE_COMMIT
+      ref: e208c21f6a676204c01c903422e07cbe3841b5db
       path: .
       enforcement: block
   coupling:
@@ -32,6 +32,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@PINNED_RELEASE_COMMIT
+    uses: skippednote/axelerant-documentation-skill-reference/.github/workflows/docs-coupling.yml@e208c21f6a676204c01c903422e07cbe3841b5db
     with:
-      ref: PINNED_RELEASE_COMMIT
+      ref: e208c21f6a676204c01c903422e07cbe3841b5db
