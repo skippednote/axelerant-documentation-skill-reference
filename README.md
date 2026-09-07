@@ -52,7 +52,7 @@ Change the contract, checker, fixtures, templates and published policy together.
 
 ## Ownership
 
-Team: `@axelerant/engineering`. Maintainer: Bassam Ismail. Support and escalation: repository issues assigned to the owning team.
+Owner: `@skippednote`. Maintainer: Bassam Ismail. Support and escalation: open an issue on this repository.
 
 ## Distribution
 

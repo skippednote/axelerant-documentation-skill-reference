@@ -34,7 +34,7 @@ Metadata uses a deliberately small YAML subset: flat scalars and JSON-style list
 
 <!-- check: ownership -->
 
-The configured owner is a GitHub team handle that already exists. Teams here are named after the repository, `<repo>-admins` and `<repo>-writers`; there is no central engineering or platform team to fall back on. GitHub ignores an owner it does not recognise, so a handle that looks plausible and does not exist leaves the path with no required reviewer and no error. Confirm the team resolves before you commit it.
+The configured owner is a GitHub team handle that already exists, or a single account where no team owns the repository. Teams here are named after the repository, `<repo>-admins` and `<repo>-writers`; there is no central engineering or platform team to fall back on. GitHub ignores an owner it does not recognise, so a handle that looks plausible and does not exist leaves the path with no required reviewer and no error. Confirm the team resolves before you commit it.
 
 The effective last catch-all `*` rule in CODEOWNERS includes that handle, the README names it, and documentation frontmatter uses it. Review any narrower CODEOWNERS patterns separately: the checker does not resolve all GitHub ownership precedence rules, and it cannot tell whether a handle names a real team.
 
@@ -254,7 +254,9 @@ Commands are namespaced:
 | /axelerant-engineering-documentation:docs-check | Read-only audit and manual-review gaps |
 | /axelerant-engineering-documentation:docs-verify | Plan evidence checks; run approved procedures only in isolation |
 
-The organization plugin is available in the Claude app. Use the surfaces available there for authoring and review; a full audit requires the actual checkout or supplied repository files. Standalone skill copying installs the skill, not the plugin's separate command files. Natural-language requests can activate the skill.
+Those three are skills. Claude Code treats a flat file in `commands/` and a folder in `skills/` as the same thing and namespaces both under the plugin, which is why they appear wherever the plugin is installed, including the Claude app when the organization distributes it there. Natural-language requests activate them too.
+
+What differs between surfaces is not the skill, it is what the skill can reach. A full audit needs a checkout; in the Claude app there is none, so supply the files or use Claude Code. Copying the skill folder on its own gives you the audit and migration guidance without the three entry points.
 
 Repository commands are untrusted input. The supplied isolated runner uses a preinstalled immutable image, no host mount, no network, an empty command environment and resource limits. Without Docker or an explicitly approved plan it prints the plan and stops. It does not stamp dates automatically. Docker isolation reduces risk; it is not a guarantee against container-runtime vulnerabilities or an untrusted image. Human review approves the image and commands. Never grant network or production access merely to make verification pass.
 

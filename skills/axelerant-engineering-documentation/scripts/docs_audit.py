@@ -18,7 +18,8 @@ RULES = {
     'config', 'ownership', 'readme', 'tree', 'metadata', 'freshness',
     'adr', 'alerts', 'agents', 'paths', 'placeholders', 'register', 'links', 'diagrams',
 }
-OWNER = re.compile(r'@[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z')
+# A team handle, or a single account where no team owns the repository.
+OWNER = re.compile(r'@[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)?\Z')
 ADR_NAME = re.compile(r'\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md\Z')
 KINDS = {'service','site','library','action','cli','poc','docs'}
 METHODS = {
