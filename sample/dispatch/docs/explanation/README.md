@@ -8,7 +8,7 @@ verification_method: link-review
 
 # Explanation
 
-- [System boundaries](architecture.md)
+- [System boundaries](../architecture.md)
 - [Message state](data-model.md)
 - [Retries and duplicates](delivery-semantics.md)
 - [Trust limits](security.md)

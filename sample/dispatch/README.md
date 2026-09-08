@@ -54,9 +54,10 @@ All example operational information is fictional and public-safe.
 ## Documentation
 
 - [Documentation map](docs/README.md) — where do I begin?
-- [First notification](docs/tutorials/first-notification.md) — what happens after acceptance?
+- [First notification](docs/getting-started.md) — what happens after acceptance?
 - [Run locally](docs/how-to/run-locally.md) — how do I start the API and worker?
-- [Architecture](docs/explanation/architecture.md) — why separate delivery?
+- [Architecture](docs/architecture.md) — why separate delivery?
+- [Operations](docs/operations.md) — how is it run, deployed and recovered?
 - [API reference](docs/reference/api.md) — which routes exist?
 - [Alert response](docs/runbooks/README.md) — how do the local response exercises work?
 

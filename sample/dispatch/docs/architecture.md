@@ -25,7 +25,7 @@ C4Context
 
 Acceptance and delivery are separate. Returning 202 after a database commit avoids blocking the caller on provider behavior. The cost is a state machine and delayed completion.
 
-SQLite replaces the earlier fictional cloud queue for this executable example. It eliminates service installation and credentials, but does not demonstrate a distributed broker. [ADR 0003](../adr/0003-executable-local-example.md) records this change without erasing earlier decisions.
+SQLite replaces the earlier fictional cloud queue for this executable example. It eliminates service installation and credentials, but does not demonstrate a distributed broker. [ADR 0003](adr/0003-executable-local-example.md) records this change without erasing earlier decisions.
 
 ## Building blocks
 

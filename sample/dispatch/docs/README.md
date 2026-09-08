@@ -12,9 +12,10 @@ Use the local implementation to test the documentation contract, not as a produc
 
 | Question | Page |
 | --- | --- |
-| How is a notification delivered? | [Tutorial](tutorials/first-notification.md) |
+| How is a notification delivered? | [Tutorial](getting-started.md) |
 | How do I run it? | [Local setup](how-to/run-locally.md) |
 | What routes exist? | [API](reference/api.md) |
-| Why use this design? | [Architecture](explanation/architecture.md) |
+| Why use this design? | [Architecture](architecture.md) |
+| How is it run and recovered? | [Operations](operations.md) |
 | What changed from the fictional cloud design? | [Decisions](adr/README.md) |
 | How are failures exercised? | [Runbooks](runbooks/README.md) |

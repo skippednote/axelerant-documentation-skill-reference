@@ -1,4 +1,3 @@
-tier: 2
 kind: service
 owner: "@axelerant/dispatch-admins"
 visibility: public

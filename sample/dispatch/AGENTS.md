@@ -27,6 +27,8 @@ The owning repository runs rendered diagram validation separately. A static chec
 | Need | Page |
 | --- | --- |
 | Runtime | `docs/how-to/run-locally.md` |
+| How it fits together | `docs/architecture.md` |
+| Environments, deploy, rollback | `docs/operations.md` |
 | Retry semantics | `docs/explanation/delivery-semantics.md` |
 | API | `docs/reference/api.md` |
 | Decisions | `docs/adr/README.md` |
